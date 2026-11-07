@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
++@extends('admin.layouts.app')
 @section('title', 'Nueva Experiencia')
 @section('page-title', 'Nueva Experiencia')
 
@@ -96,28 +96,31 @@
                 </div>
 
                 <div class="form-group">
+                    <label>🔗 SLUG (URL amigable)</label>
+                    <input type="text" name="slug" placeholder="blue-gold-platinum" value="{{ old('slug') }}">
+                    <div class="help-text">Dejar en blanco para generar automáticamente</div>
+                </div>
+
+                <div class="form-group">
                     <label>📝 DESCRIPCIÓN</label>
                     <textarea name="descripcion" placeholder="Describe qué incluye esta experiencia...">{{ old('descripcion') }}</textarea>
                 </div>
 
+                <!-- CORREGIDO: Ahora solo un campo de precio en Bolivianos -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label>💰 PRECIO (USD)</label>
-                        <input type="number" name="precio" step="0.01" placeholder="49.00" value="{{ old('precio') }}" required>
+                        <label>💰 PRECIO (Bolivianos - Bs)</label>
+                        <input type="number" name="precio" step="0.01" placeholder="341.04" value="{{ old('precio') }}" required>
+                        <div class="help-text">Precio en Bolivianos (Bs) por persona</div>
                     </div>
-                    <div class="form-group">
-                        <label>💰 PRECIO (Bs) - Opcional</label>
-                        <input type="number" name="precio_bs" step="0.01" placeholder="341.04" value="{{ old('precio_bs') }}">
-                        <div class="help-text">Si se deja vacío, se calculará automáticamente</div>
-                    </div>
-                </div>
-
-                <div class="form-row-3">
                     <div class="form-group">
                         <label>🎨 ICONO (FontAwesome)</label>
                         <input type="text" name="icono" placeholder="fas fa-star" value="{{ old('icono') }}">
                         <div class="help-text">Ej: fas fa-crown, fas fa-gem</div>
                     </div>
+                </div>
+
+                <div class="form-row-3">
                     <div class="form-group">
                         <label>🎨 COLOR</label>
                         <input type="color" name="color" value="{{ old('color', '#c9a84c') }}">
@@ -125,6 +128,11 @@
                     <div class="form-group">
                         <label>⏰ DURACIÓN (horas)</label>
                         <input type="number" name="duracion_horas" value="{{ old('duracion_horas', 3) }}" min="1" max="24" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🔢 ORDEN</label>
+                        <input type="number" name="orden" value="{{ old('orden', 0) }}" min="0">
+                        <div class="help-text">Número menor = aparece primero</div>
                     </div>
                 </div>
 
@@ -135,11 +143,6 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>🔢 ORDEN</label>
-                        <input type="number" name="orden" value="{{ old('orden', 0) }}" min="0">
-                        <div class="help-text">Número menor = aparece primero</div>
-                    </div>
                     <div class="form-group">
                         <label>✅ ACTIVO</label>
                         <select name="activo">

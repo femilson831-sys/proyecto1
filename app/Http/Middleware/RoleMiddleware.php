@@ -9,14 +9,18 @@ class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, $role)
     {
+        // Verificar si el usuario está autenticado
         if (!auth()->check()) {
-            abort(403);
+            return redirect()->route('login');
         }
-
-        if (auth()->user()->rol !== $role) {
-            abort(403, 'No autorizado');
+        
+        // Verificar si tiene el rol correcto
+        $userRole = auth()->user()->rol ?? 'cliente';
+        
+        if ($userRole !== $role) {
+            abort(403, 'No tienes acceso a esta sección. Rol requerido: ' . $role . ', tu rol: ' . $userRole);
         }
-
+        
         return $next($request);
     }
 }

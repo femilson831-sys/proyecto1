@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.4",
         "livewire/volt": "^1.0",
+        "phpmailer/phpmailer": "^7.1",
         "symfony/console": "*"
     },
     "require-dev": {

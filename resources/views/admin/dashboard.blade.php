@@ -476,7 +476,7 @@
                     ✅ Crear Horario
                 </button>
                 <a href="{{ route('admin.cholets.index') }}" class="btn-gestion">
-                    📋 Gestionar horarios
+                    📋 Gestionar cholets
                 </a>
             </div>
         </form>
@@ -611,7 +611,7 @@
     @if(($horariosRecientes ?? collect())->count() > 0)
     <div style="text-align: right; margin-top: 15px;">
         <a href="{{ route('admin.cholets.index') }}" class="btn-ver-mas">
-            Ver todos los horarios →
+            Ver todos los cholets →
         </a>
     </div>
     @endif

@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>JACHA TOURS — Circuito de Cholets</title>
+    <title>JACHA TOURS — Circuito de Cholets | Experiencias Únicas en El Alto</title>
+    <meta name="description" content="Descubre los Cholets más icónicos de El Alto, Bolivia. Arquitectura neoandina moderna, experiencias premium y circuitos exclusivos.">
 
     <!-- AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -30,7 +31,67 @@
             overflow-x: hidden;
         }
 
-        /* ========== HEADER ========== */
+        /* ========== SCROLLBAR PERSONALIZADA ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #C9A84C;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e4c46c;
+        }
+
+        /* ========== BOTÓN DE AUDIO ========== */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 50px;
+            padding: 10px 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(201, 168, 76, 0.5);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-control:hover {
+            background: rgba(201, 168, 76, 0.3);
+            transform: scale(1.05);
+        }
+
+        .audio-control i {
+            color: #C9A84C;
+            font-size: 1.2rem;
+        }
+
+        .audio-control span {
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .audio-control span {
+                display: none;
+            }
+            .audio-control {
+                padding: 10px 12px;
+            }
+        }
+
+        /* ========== HEADER TRANSPARENTE ========== */
         .header {
             position: fixed;
             top: 0;
@@ -39,27 +100,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
+            padding: 1.5rem 3rem;
+            background: transparent;
+            backdrop-filter: none;
             z-index: 1000;
-            border-bottom: 1px solid rgba(201, 168, 76, 0.2);
-            transition: all 0.3s;
+            transition: all 0.4s ease;
         }
 
         .header.scrolled {
-            padding: 0.7rem 2rem;
-            background: rgba(10, 10, 10, 0.98);
+            padding: 0.8rem 3rem;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.2);
         }
 
+        /* ===== LOGO MÁS GRANDE Y NOTORIO ===== */
         .header__logo img {
-            height: 45px;
+            height: 80px;  /* Antes era 50px, ahora 80px */
+            width: auto;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: transform 0.3s, filter 0.3s;
+            filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.2));
         }
 
         .header__logo img:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.4));
+        }
+
+        /* Versión scrolled: ligeramente más pequeño pero aún grande */
+        .header.scrolled .header__logo img {
+            height: 65px;
         }
 
         .hamburger {
@@ -71,7 +142,7 @@
         }
 
         .hamburger span {
-            width: 25px;
+            width: 28px;
             height: 2px;
             background: #C9A84C;
             transition: 0.3s;
@@ -91,26 +162,28 @@
 
         .header__nav {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
         }
 
         .nav-link {
             color: #fff;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            font-size: 1rem;
+            transition: all 0.3s;
             position: relative;
+            padding: 5px 0;
         }
 
         .nav-link::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -3px;
             left: 0;
             width: 0;
             height: 2px;
             background: #C9A84C;
-            transition: width 0.3s;
+            transition: width 0.3s ease;
         }
 
         .nav-link:hover::after,
@@ -123,6 +196,7 @@
             color: #C9A84C;
         }
 
+        /* Header usuario */
         .header-user {
             display: flex;
             align-items: center;
@@ -136,16 +210,18 @@
             gap: 10px;
             background: #c9a84c;
             color: #000;
-            padding: 10px 20px;
+            padding: 10px 22px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
             transition: .3s;
+            font-size: 0.9rem;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
             background: #e4c46c;
+            box-shadow: 0 5px 15px rgba(201,168,76,0.3);
         }
 
         .user-box {
@@ -153,21 +229,23 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.08);
-            padding: 8px 14px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 6px 14px;
             border-radius: 50px;
             cursor: pointer;
             transition: .3s;
+            backdrop-filter: blur(5px);
         }
 
         .user-box:hover {
             border-color: #c9a84c;
+            background: rgba(201,168,76,0.15);
         }
 
         .user-avatar {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: #c9a84c;
             color: #000;
@@ -175,7 +253,14 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-info {
@@ -190,17 +275,18 @@
         }
 
         .user-email {
-            color: rgba(255,255,255,.55);
+            color: rgba(255,255,255,.6);
             font-size: .65rem;
         }
 
         .user-dropdown {
             position: absolute;
-            top: 60px;
+            top: 55px;
             right: 0;
             width: 220px;
-            background: #111;
-            border: 1px solid rgba(255,255,255,.08);
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,.1);
             border-radius: 12px;
             padding: 8px;
             opacity: 0;
@@ -235,7 +321,7 @@
 
         .user-dropdown a:hover,
         .user-dropdown button:hover {
-            background: rgba(201,168,76,.12);
+            background: rgba(201,168,76,.15);
             color: #c9a84c;
         }
 
@@ -267,7 +353,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
         }
 
         .hero__content {
@@ -302,7 +388,7 @@
 
         .hero__description {
             font-size: 1.1rem;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.85);
             margin-bottom: 2rem;
             line-height: 1.6;
         }
@@ -361,27 +447,9 @@
         }
 
         /* ========== FONDOS DE IMAGEN ========== */
-        .circuito-section {
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('{{ asset("img/ft.jpg") }}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .experiencias-section {
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('{{ asset("img/ft.jpg") }}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        .mis-reservas-section {
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('{{ asset("img/ft.jpg") }}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
+        .circuito-section,
+        .experiencias-section,
+        .mis-reservas-section,
         .contacto-profesional {
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('{{ asset("img/ft.jpg") }}');
             background-size: cover;
@@ -405,10 +473,10 @@
             border-radius: 18px;
             display: block;
             text-decoration: none;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             transition: all 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
             cursor: pointer;
         }
 
@@ -416,7 +484,7 @@
             transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             border-color: rgba(201,168,76,0.4);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
         }
 
         .cholet-card .cholet-image {
@@ -499,18 +567,18 @@
         }
 
         .exp-card {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             padding: 2rem;
             border-radius: 18px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .exp-card:hover {
-            background: rgba(201,168,76,0.2);
+            background: rgba(201,168,76,0.15);
             transform: translateY(-10px);
             border-color: rgba(201,168,76,0.4);
         }
@@ -546,7 +614,7 @@
         }
 
         .reserva-item {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             border-radius: 16px;
             padding: 1.2rem;
@@ -557,13 +625,13 @@
             flex-wrap: wrap;
             gap: 1rem;
             transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .reserva-item:hover {
             border-color: rgba(201,168,76,0.5);
             transform: translateX(5px);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
         }
 
         .reserva-info {
@@ -620,7 +688,7 @@
             text-align: center;
             padding: 3rem;
             color: #ccc;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             border-radius: 20px;
         }
@@ -642,18 +710,18 @@
         }
 
         .contacto-card {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             border-radius: 20px;
             padding: 1.5rem;
             transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .contacto-card:hover {
             transform: translateY(-5px);
             border-color: rgba(201,168,76,0.4);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
         }
 
         .contacto-icon {
@@ -695,11 +763,11 @@
         }
 
         .contacto-formulario {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(5px);
             border-radius: 20px;
             padding: 2rem;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .contacto-formulario h3 {
@@ -720,12 +788,14 @@
             background: rgba(0,0,0,0.5);
             color: #fff;
             font-family: inherit;
+            transition: all 0.3s;
         }
 
         .form-group-contacto input:focus,
         .form-group-contacto textarea:focus {
             outline: none;
             border-color: #C9A84C;
+            background: rgba(0,0,0,0.7);
         }
 
         .form-group-contacto textarea {
@@ -759,7 +829,8 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: #1a1a1a;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
             border-left: 4px solid #10b981;
             padding: 1rem 1.5rem;
             border-radius: 12px;
@@ -795,7 +866,8 @@
 
         /* ========== FOOTER ========== */
         .footer {
-            background: #0a0a0a;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
             padding: 3rem 2rem 2rem;
             text-align: center;
             border-top: 1px solid rgba(201,168,76,0.2);
@@ -824,19 +896,55 @@
             transform: translateY(-3px);
         }
 
+        /* ========== ANIMACIONES ADICIONALES ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
         /* ========== RESPONSIVE ========== */
         @media (max-width: 900px) {
             .hamburger {
                 display: flex;
             }
 
+            .header {
+                padding: 1rem 1.5rem;
+                background: rgba(10, 10, 10, 0.95);
+                backdrop-filter: blur(10px);
+            }
+
+            .header.scrolled {
+                padding: 0.8rem 1.5rem;
+            }
+
+            /* Logo más grande pero ajustado para móvil */
+            .header__logo img {
+                height: 60px;
+            }
+
+            .header.scrolled .header__logo img {
+                height: 50px;
+            }
+
             .header__nav {
                 position: fixed;
                 top: 0;
                 right: -100%;
-                width: 70%;
+                width: 75%;
                 height: 100vh;
-                background: #0a0a0a;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
@@ -877,15 +985,31 @@
                 align-items: flex-start;
             }
         }
+
+        /* Ajuste para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .header__logo img {
+                height: 50px;
+            }
+            .header.scrolled .header__logo img {
+                height: 40px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+<!-- Botón de control de audio -->
+<div class="audio-control" id="audioControl">
+    <i class="fas fa-volume-mute" id="audioIcon"></i>
+    <span>Activar audio</span>
+</div>
+
+<!-- HEADER TRANSPARENTE -->
 <header class="header" id="header">
     <div class="header__logo" onclick="window.location.href='{{ url('/') }}'">
-        <img src="{{ asset('img/logo.png') }}" alt="JACHA TOURS">
+        <img src="{{ asset('img/logp.bl.nara.png') }}" alt="JACHA TOURS">
     </div>
 
     <div class="hamburger" id="hamburger">
@@ -906,17 +1030,21 @@
         @auth
             <div class="user-box">
                 <div class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->nombre ?? Auth::user()->name, 0, 1)) }}
+                    @if(Auth::user()->foto && file_exists(public_path(Auth::user()->foto)))
+                        <img src="{{ asset(Auth::user()->foto) }}" alt="Avatar">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->nombre ?? Auth::user()->name, 0, 1)) }}
+                    @endif
                 </div>
                 <div class="user-info">
                     <span class="user-name">{{ Auth::user()->nombre ?? Auth::user()->name }}</span>
                     <span class="user-email">{{ Auth::user()->email }}</span>
                 </div>
                 <div class="user-dropdown">
-                    <a href="{{ route('reservas.mis-reservas') }}">
-                        <i class="fas fa-calendar-alt"></i> Ver todas mis reservas
+                    <a href="{{ route('reservas.mis') }}">
+                        <i class="fas fa-calendar-alt"></i> Mis Reservas
                     </a>
-                    <a href="{{ route('profile.edit') }}">
+                    <a href="{{ route('perfil.index') }}">
                         <i class="fas fa-user-gear"></i> Mi Perfil
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
@@ -938,7 +1066,7 @@
 <!-- HERO SECTION -->
 <section class="hero" id="inicio">
     <div class="hero__video-wrapper">
-        <video class="hero__video" autoplay muted loop playsinline>
+        <video id="heroVideo" class="hero__video" autoplay muted loop playsinline poster="{{ asset('img/ft.jpg') }}">
             <source src="{{ asset('video/cholets.mp4') }}" type="video/mp4">
         </video>
         <div class="hero__overlay"></div>
@@ -961,7 +1089,7 @@
     </div>
 </section>
 
-<!-- CIRCUITO - CHOLETS (CORREGIDO) -->
+<!-- CIRCUITO - CHOLETS -->
 <section class="section-block circuito-section" id="circuito">
     <div class="section-header" data-aos="fade-up">
         <span class="section-subtitle">CIRCUITO ARQUITECTÓNICO</span>
@@ -971,10 +1099,9 @@
 
     <div class="cholets-grid">
         @forelse($cholets as $cholet)
-            <!-- ✅ CORREGIDO: Redirige a la página de detalles del cholet -->
             <div class="cholet-card" data-aos="zoom-in" onclick="window.location.href='{{ route('cholets.show', $cholet->id) }}'">
                 <div class="cholet-image">
-                    <img src="{{ asset('storage/cholets/' . $cholet->imagen) }}" alt="{{ $cholet->nombre }}">
+                    <img src="{{ asset('storage/cholets/' . $cholet->imagen) }}" alt="{{ $cholet->nombre }}" loading="lazy">
                 </div>
                 <div class="card-overlay"></div>
                 <div class="cholet-content">
@@ -998,24 +1125,33 @@
     </div>
 
     <div class="experiencias-grid">
-        <div class="exp-card" data-aos="flip-left">
-            <i class="fas fa-camera"></i>
-            <h3>Blue / Silver</h3>
-            <p>Visita exterior guiada con fotografía profesional. Acceso a fachadas y exteriores con audioguía.</p>
-            <span class="exp-price">Desde Bs 341</span>
-        </div>
-        <div class="exp-card" data-aos="flip-left" data-aos-delay="100">
-            <i class="fas fa-champagne-glasses"></i>
-            <h3>Gold</h3>
-            <p>Acceso a salones de eventos exclusivos, realidad aumentada, guía cultural y degustación.</p>
-            <span class="exp-price">Desde Bs 619</span>
-        </div>
-        <div class="exp-card" data-aos="flip-left" data-aos-delay="200">
-            <i class="fas fa-crown"></i>
-            <h3>Platinum</h3>
-            <p>Acceso total a penthouses superiores, encuentro con propietarios y servicios VIP personalizados.</p>
-            <span class="exp-price">Desde Bs 1,037</span>
-        </div>
+        @forelse($experiencias as $exp)
+            <div class="exp-card" data-aos="flip-left" data-aos-delay="{{ $loop->index * 100 }}">
+                <i class="fas {{ $exp->icono ?? 'fa-ticket' }}"></i>
+                <h3>{{ $exp->nombre }}</h3>
+                <p>{{ Str::limit($exp->descripcion, 100) }}</p>
+                <span class="exp-price">Desde Bs {{ number_format($exp->precio, 0, ',', '.') }}</span>
+            </div>
+        @empty
+            <div class="exp-card" data-aos="flip-left">
+                <i class="fas fa-camera"></i>
+                <h3>Blue / Silver</h3>
+                <p>Visita exterior guiada con fotografía profesional.</p>
+                <span class="exp-price">Desde Bs 341</span>
+            </div>
+            <div class="exp-card" data-aos="flip-left" data-aos-delay="100">
+                <i class="fas fa-champagne-glasses"></i>
+                <h3>Gold</h3>
+                <p>Acceso a salones exclusivos y degustación.</p>
+                <span class="exp-price">Desde Bs 619</span>
+            </div>
+            <div class="exp-card" data-aos="flip-left" data-aos-delay="200">
+                <i class="fas fa-crown"></i>
+                <h3>Platinum</h3>
+                <p>Acceso total VIP y servicios personalizados.</p>
+                <span class="exp-price">Desde Bs 1,037</span>
+            </div>
+        @endforelse
     </div>
 </section>
 
@@ -1024,13 +1160,14 @@
     <div class="section-header" data-aos="fade-up">
         <span class="section-subtitle">TUS RESERVAS</span>
         <h2 class="section-title">Mis Reservas Activas</h2>
-        <p class="section-description">Aquí están tus reservas recientes. Haz clic en "Ver todas" para más detalles.</p>
+        <p class="section-description">Aquí están tus reservas recientes.</p>
     </div>
 
     <div class="reservas-lista">
         @auth
             @php
-                $misReservas = App\Models\Reserva::where('user_id', Auth::id())
+                $misReservas = App\Models\Reserva::with('cholet')
+                            ->where('user_id', Auth::id())
                             ->whereIn('estado', ['pendiente', 'pago_reportado', 'confirmada'])
                             ->orderBy('created_at', 'desc')
                             ->take(3)
@@ -1039,13 +1176,13 @@
             
             @if($misReservas->count() > 0)
                 @foreach($misReservas as $reserva)
-                    <div class="reserva-item" data-aos="fade-up">
+                    <div class="reserva-item" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         <div class="reserva-info">
-                            <h4>{{ $reserva->cholet->nombre }}</h4>
+                            <h4>{{ $reserva->cholet?->nombre ?? 'Cholet no disponible' }}</h4>
                             <p>
                                 <i class="fas fa-calendar"></i> {{ \Carbon\Carbon::parse($reserva->fecha)->format('d/m/Y') }} &nbsp;|&nbsp;
                                 <i class="fas fa-users"></i> {{ $reserva->personas }} personas &nbsp;|&nbsp;
-                                <i class="fas fa-ticket"></i> {{ $reserva->experiencia }}
+                                <i class="fas fa-ticket"></i> {{ $reserva->experiencia ?? 'No especificada' }}
                             </p>
                             <div class="reserva-codigo">
                                 <i class="fas fa-barcode"></i> {{ $reserva->codigo_reserva }}
@@ -1054,9 +1191,10 @@
                         <div>
                             <span class="reserva-estado estado-{{ $reserva->estado }}">
                                 @switch($reserva->estado)
-                                    @case('pendiente') Pendiente @break
-                                    @case('pago_reportado') Pago Reportado @break
-                                    @case('confirmada') Confirmada @break
+                                    @case('pendiente') <i class="fas fa-hourglass-half"></i> Pendiente @break
+                                    @case('pago_reportado') <i class="fas fa-clock"></i> Pago Reportado @break
+                                    @case('confirmada') <i class="fas fa-check-circle"></i> Confirmada @break
+                                    @case('cancelada') <i class="fas fa-times-circle"></i> Cancelada @break
                                     @default {{ ucfirst($reserva->estado) }}
                                 @endswitch
                             </span>
@@ -1065,7 +1203,7 @@
                 @endforeach
                 
                 <div style="text-align: center; margin-top: 2rem;">
-                    <a href="{{ route('reservas.mis-reservas') }}" class="ver-mas-btn">
+                    <a href="{{ route('reservas.mis') }}" class="ver-mas-btn">
                         <i class="fas fa-arrow-right"></i> Ver todas mis reservas
                     </a>
                 </div>
@@ -1095,15 +1233,13 @@
     <div class="section-header" data-aos="fade-up">
         <span class="section-subtitle">CONTACTO</span>
         <h2 class="section-title">¿Listo para la aventura?</h2>
-        <p class="section-description">Estamos aquí para ayudarte. Contáctanos de la forma que prefieras.</p>
+        <p class="section-description">Estamos aquí para ayudarte.</p>
     </div>
 
     <div class="contacto-wrapper">
         <div class="contacto-info">
             <div class="contacto-card" data-aos="fade-right">
-                <div class="contacto-icon">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
+                <div class="contacto-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <h3>📍 Ubicación</h3>
                 <p>El Alto - Bolivia</p>
                 <a href="https://maps.google.com/?q=El+Alto+Bolivia" target="_blank" class="contacto-link">
@@ -1112,9 +1248,7 @@
             </div>
 
             <div class="contacto-card" data-aos="fade-right" data-aos-delay="100">
-                <div class="contacto-icon">
-                    <i class="fab fa-whatsapp"></i>
-                </div>
+                <div class="contacto-icon"><i class="fab fa-whatsapp"></i></div>
                 <h3>📱 WhatsApp</h3>
                 <p>+591 69375465</p>
                 <a href="https://wa.me/59169375465" target="_blank" class="contacto-link">
@@ -1123,9 +1257,7 @@
             </div>
 
             <div class="contacto-card" data-aos="fade-right" data-aos-delay="200">
-                <div class="contacto-icon">
-                    <i class="fas fa-envelope"></i>
-                </div>
+                <div class="contacto-icon"><i class="fas fa-envelope"></i></div>
                 <h3>📧 Email</h3>
                 <p>info@jachatours.com</p>
                 <a href="mailto:info@jachatours.com" class="contacto-link">
@@ -1134,18 +1266,15 @@
             </div>
 
             <div class="contacto-card" data-aos="fade-right" data-aos-delay="300">
-                <div class="contacto-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <h3>🕒 Horario de atención</h3>
+                <div class="contacto-icon"><i class="fas fa-clock"></i></div>
+                <h3>🕒 Horario</h3>
                 <p>Lunes a Domingo: 9:00 - 20:00</p>
-                <p style="font-size: 0.8rem; margin-top: 0.5rem;">Atención personalizada 24/7 por WhatsApp</p>
             </div>
         </div>
 
         <div class="contacto-formulario" data-aos="fade-left">
             <h3><i class="fas fa-paper-plane"></i> Envíanos un mensaje</h3>
-            <form id="contactoForm" onsubmit="enviarWhatsAppContacto(event)">
+            <form id="contactoForm">
                 <div class="form-group-contacto">
                     <input type="text" id="contacto_nombre" placeholder="Tu nombre completo" required>
                 </div>
@@ -1169,73 +1298,136 @@
 <!-- FOOTER -->
 <footer class="footer">
     <div class="footer-logo">
-        <img src="{{ asset('img/logo.png') }}" alt="JACHA TOURS">
+        <img src="{{ asset('img/logo.blanco.amarillo.png') }}" alt="JACHA TOURS">
     </div>
     <h3 style="color:#C9A84C; margin:1rem 0;">JACHA TOURS</h3>
     <p style="color:rgba(255,255,255,0.6);">Arquitectura neoandina · El Alto Bolivia</p>
     <div class="footer-social">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-tiktok"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.facebook.com/share/1L4gjr4JXd/" target="_blank" aria-label="Facebook" rel="noopener noreferrer">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://www.instagram.com/jachatoursbolivia?igsh=cHBnN2NhZTNuYXl2" target="_blank" aria-label="Instagram" rel="noopener noreferrer">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.tiktok.com/@user7332490373917?_r=1&_t=ZS-9756PEr9pW0" target="_blank" aria-label="TikTok" rel="noopener noreferrer">
+            <i class="fab fa-tiktok"></i>
+        </a>
+        <a href="https://www.youtube.com/c/jachatours" target="_blank" aria-label="YouTube" rel="noopener noreferrer">
+            <i class="fab fa-youtube"></i>
+        </a>
     </div>
     <span style="color:rgba(255,255,255,0.4); font-size:0.8rem;">© 2026 JACHA TOURS. Todos los derechos reservados.</span>
 </footer>
 
+<!-- SCRIPTS -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({ duration: 1200, once: true, offset: 100 });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicialización AOS
+        AOS.init({ duration: 1200, once: true, offset: 100 });
 
-    // Hamburguesa
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('navMenu');
+        // ==========================================
+        // 1. CONTROL DE AUDIO DEL VIDEO
+        // ==========================================
+        const heroVideo = document.getElementById('heroVideo');
+        const audioBtn = document.getElementById('audioControl');
+        const audioIcon = document.getElementById('audioIcon');
+        const audioText = audioBtn.querySelector('span');
+        
+        let audioMuted = true;
 
-    hamburger?.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('open');
-    });
-
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger?.classList.remove('active');
-            navMenu?.classList.remove('open');
-        });
-    });
-
-    // Header scroll
-    const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-
-    // Smooth scroll para anclas
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        heroVideo.addEventListener('canplay', function() {
+            if (heroVideo.muted) {
+                audioMuted = true;
+                audioIcon.className = 'fas fa-volume-mute';
+                if(audioText) audioText.textContent = 'Activar audio';
+            } else {
+                audioMuted = false;
+                audioIcon.className = 'fas fa-volume-up';
+                if(audioText) audioText.textContent = 'Desactivar audio';
             }
         });
-    });
 
-    // ========== CONTACTO WHATSAPP ==========
-    const numeroWhatsApp = "59169375465";
+        window.toggleAudio = function() {
+            if (audioMuted) {
+                heroVideo.muted = false;
+                audioIcon.className = 'fas fa-volume-up';
+                if (audioText) audioText.textContent = 'Desactivar audio';
+                audioMuted = false;
+                mostrarNotificacion('Audio activado', 'Ahora puedes escuchar el video', 'success');
+            } else {
+                heroVideo.muted = true;
+                audioIcon.className = 'fas fa-volume-mute';
+                if (audioText) audioText.textContent = 'Activar audio';
+                audioMuted = true;
+                mostrarNotificacion('Audio desactivado', 'El video se reproduce en silencio', 'info');
+            }
+        };
 
-    function enviarWhatsAppContacto(event) {
-        event.preventDefault();
-        
-        const nombre = document.getElementById('contacto_nombre').value;
-        const email = document.getElementById('contacto_email').value;
-        const telefono = document.getElementById('contacto_telefono').value;
-        const mensaje = document.getElementById('contacto_mensaje').value;
-        
-        const textoWhatsApp = `*🏛️ NUEVO MENSAJE DE CONTACTO - JACHA TOURS* 🏛️
-        
+        audioBtn.addEventListener('click', toggleAudio);
+
+        // ==========================================
+        // 2. MENÚ HAMBURGUESA
+        // ==========================================
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger?.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger?.classList.remove('active');
+                navMenu?.classList.remove('open');
+            });
+        });
+
+        // ==========================================
+        // 3. HEADER SCROLL
+        // ==========================================
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // ==========================================
+        // 4. SMOOTH SCROLL PARA ANCLAS
+        // ==========================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ==========================================
+        // 5. CONTACTO VÍA WHATSAPP
+        // ==========================================
+        const numeroWhatsApp = "59169375465";
+        const contactoForm = document.getElementById('contactoForm');
+
+        contactoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('contacto_nombre').value;
+            const email = document.getElementById('contacto_email').value;
+            const telefono = document.getElementById('contacto_telefono').value;
+            const mensaje = document.getElementById('contacto_mensaje').value;
+            
+            const textoWhatsApp = `*🏛️ NUEVO MENSAJE DE CONTACTO - JACHA TOURS* 🏛️
+            
 *👤 Nombre:* ${nombre}
 *📧 Email:* ${email}
 *📱 Teléfono:* ${telefono || 'No especificado'}
@@ -1245,49 +1437,67 @@ ${mensaje}
 
 ---
 📅 Enviado desde la página web de JACHA TOURS`;
-        
-        window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(textoWhatsApp)}`, '_blank');
-        
-        mostrarNotificacion('Mensaje enviado', 'Redirigiendo a WhatsApp...', 'success');
-        
-        document.getElementById('contactoForm').reset();
-    }
+            
+            window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(textoWhatsApp)}`, '_blank');
+            
+            mostrarNotificacion('Mensaje enviado', 'Redirigiendo a WhatsApp...', 'success');
+            
+            contactoForm.reset();
+        });
 
-    function mostrarNotificacion(titulo, mensaje, tipo = 'success') {
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        
-        let icon = 'fa-check-circle';
-        let borderColor = '#10b981';
-        
-        if (tipo === 'error') {
-            icon = 'fa-exclamation-circle';
-            borderColor = '#ef4444';
-        } else if (tipo === 'warning') {
-            icon = 'fa-exclamation-triangle';
-            borderColor = '#f59e0b';
+        // ==========================================
+        // 6. SISTEMA DE NOTIFICACIONES (TOASTS)
+        // ==========================================
+        function mostrarNotificacion(titulo, mensaje, tipo = 'success') {
+            const existingToast = document.querySelector('.toast-notification');
+            if(existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            
+            let icon = 'fa-check-circle';
+            let borderColor = '#10b981';
+            
+            if (tipo === 'error') {
+                icon = 'fa-exclamation-circle';
+                borderColor = '#ef4444';
+            } else if (tipo === 'warning') {
+                icon = 'fa-exclamation-triangle';
+                borderColor = '#f59e0b';
+            } else if (tipo === 'info') {
+                icon = 'fa-info-circle';
+                borderColor = '#3b82f6';
+            }
+            
+            toast.style.borderLeftColor = borderColor;
+            toast.innerHTML = `
+                <i class="fas ${icon}" style="font-size: 1.2rem; color: ${borderColor};"></i>
+                <div>
+                    <strong style="display: block; font-size: 0.85rem;">${titulo}</strong>
+                    <span style="font-size: 0.75rem; color: #ccc;">${mensaje}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
         }
-        
-        toast.style.borderLeftColor = borderColor;
-        toast.innerHTML = `
-            <i class="fas ${icon}" style="font-size: 1.2rem;"></i>
-            <div>
-                <strong style="display: block; font-size: 0.85rem;">${titulo}</strong>
-                <span style="font-size: 0.75rem;">${mensaje}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideOutRight 0.4s ease';
-            setTimeout(() => toast.remove(), 400);
-        }, 3500);
-    }
 
-    @if(session('success'))
-        mostrarNotificacion('Éxito', '{{ session('success') }}', 'success');
-    @endif
+        // ==========================================
+        // 7. MENSAJES FLASH DE LARAVEL
+        // ==========================================
+        @if(session('success'))
+            mostrarNotificacion('Éxito', '{{ session('success') }}', 'success');
+        @endif
+        
+        @if(session('error'))
+            mostrarNotificacion('Error', '{{ session('error') }}', 'error');
+        @endif
+
+    });
 </script>
 
 </body>

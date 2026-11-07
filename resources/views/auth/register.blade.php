@@ -375,7 +375,7 @@
         <!-- LOGO -->
         <div class="brand">
 
-            <img src="{{ asset('img/logo.png') }}" alt="JACHA TOURS">
+            <img src="{{ asset('img/logo.blanco.amarillo.png') }}" alt="JACHA TOURS">
 
             <h1>JACHA TOURS</h1>
 

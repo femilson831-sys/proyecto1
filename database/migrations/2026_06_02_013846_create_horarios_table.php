@@ -10,17 +10,21 @@ return new class extends Migration
     {
         Schema::create('horarios', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cholet_id');
+            $table->foreignId('cholet_id')->constrained()->onDelete('cascade');
+            $table->foreignId('guia_id')->nullable()->constrained('guias')->nullOnDelete(); // ← NUEVO CAMPO
             $table->date('fecha');
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->integer('capacidad_maxima')->default(20);
             $table->integer('reservas_actuales')->default(0);
             $table->boolean('disponible')->default(true);
+            $table->text('notas_guia')->nullable(); // ← Instrucciones para el guía
             $table->timestamps();
             
-            $table->foreign('cholet_id')->references('id')->on('cholets')->onDelete('cascade');
-            $table->unique(['cholet_id', 'fecha', 'hora_inicio']);
+            // Índices para búsquedas rápidas
+            $table->index('fecha');
+            $table->index('guia_id');
+            $table->index(['fecha', 'cholet_id']);
         });
     }
 

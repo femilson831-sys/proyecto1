@@ -12,6 +12,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- html2canvas para descargar QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         :root {
             --gold: #c9a84c;
@@ -22,6 +25,7 @@
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
+            --info: #3b82f6;
         }
         
         * {
@@ -42,7 +46,7 @@
         }
         
         .container {
-            max-width: 650px;
+            max-width: 700px;
             width: 100%;
             margin: 0 auto;
             background: var(--dark-card);
@@ -165,7 +169,7 @@
             gap: 10px;
             color: var(--gold);
         }
-        .payment-options { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .payment-options { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
         .payment-btn {
             flex: 1;
             background: rgba(255,255,255,0.03);
@@ -176,6 +180,7 @@
             transition: all 0.3s ease;
             text-align: center;
             color: #fff;
+            min-width: 120px;
         }
         .payment-btn.active {
             border-color: var(--gold);
@@ -203,6 +208,28 @@
             margin: 0 auto;
             border-radius: 16px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            object-fit: contain;
+        }
+        
+        /* Botón de descargar QR */
+        .btn-download-qr {
+            background: rgba(201,168,76,0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-download-qr:hover {
+            background: var(--gold);
+            color: #000;
+            transform: translateY(-2px);
         }
         
         .account-container {
@@ -264,6 +291,7 @@
             margin-top: 1.5rem;
         }
         .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(18,140,126,0.3); }
+        
         .btn-cancel {
             width: 100%;
             background: rgba(239, 68, 68, 0.15);
@@ -341,6 +369,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            max-width: 350px;
         }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
@@ -349,6 +378,20 @@
         @keyframes slideOutRight {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         @media (max-width: 550px) {
@@ -360,6 +403,7 @@
             .success-header { padding: 1.8rem 1.5rem; }
             .details { padding: 1.2rem; }
             .total-row { margin: 1rem -1.2rem -1.2rem -1.2rem; padding: 1rem 1.2rem; }
+            .toast-notification { max-width: calc(100% - 40px); right: 20px; bottom: 20px; }
         }
     </style>
 </head>
@@ -380,36 +424,47 @@
     <div class="details">
         <div class="detail-row">
             <div class="detail-label"><i class="fas fa-building"></i> Cholet:</div>
-            <div class="detail-value">{{ $reserva->cholet->nombre }}</div>
+            <div class="detail-value">{{ $reserva->cholet->nombre ?? 'No disponible' }}</div>
         </div>
         <div class="detail-row">
             <div class="detail-label"><i class="fas fa-calendar"></i> Fecha:</div>
-            <div class="detail-value">{{ \Carbon\Carbon::parse($reserva->fecha)->format('d/m/Y') }}</div>
+            <div class="detail-value">{{ \Carbon\Carbon::parse($reserva->fecha)->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</div>
         </div>
         @if($reserva->hora_reserva)
         <div class="detail-row">
             <div class="detail-label"><i class="fas fa-clock"></i> Hora:</div>
-            <div class="detail-value">{{ \Carbon\Carbon::parse($reserva->hora_reserva)->format('h:i A') }}</div>
+            <div class="detail-value">{{ \Carbon\Carbon::parse($reserva->hora_reserva)->format('g:i A') }}</div>
         </div>
         @endif
         <div class="detail-row">
             <div class="detail-label"><i class="fas fa-crown"></i> Experiencia:</div>
-            <div class="detail-value">{{ $reserva->experiencia }}</div>
+            <div class="detail-value">{{ $reserva->experienciaRelacion->nombre ?? $reserva->experiencia }}</div>
         </div>
         <div class="detail-row">
             <div class="detail-label"><i class="fas fa-users"></i> Personas:</div>
             <div class="detail-value">{{ $reserva->personas }}</div>
         </div>
+        @if($reserva->experienciaRelacion && $reserva->experienciaRelacion->duracion_horas)
+        <div class="detail-row">
+            <div class="detail-label"><i class="fas fa-hourglass-half"></i> Duración:</div>
+            <div class="detail-value">{{ $reserva->experienciaRelacion->duracion_horas }} horas</div>
+        </div>
+        @endif
+        
+        @php
+            // CORREGIDO: Obtener precio de la experiencia (ahora en bolivianos)
+            $precioUnitario = $reserva->experienciaRelacion ? $reserva->experienciaRelacion->precio : $reserva->precio_unitario;
+            $totalBolivianos = $precioUnitario * $reserva->personas;
+            // Mostrar también en USD para referencia (tipo de cambio aproximado)
+            $tipoCambio = 6.96;
+            $totalUSD = $totalBolivianos / $tipoCambio;
+        @endphp
+        
         <div class="detail-row total-row">
-            <div class="detail-label"><i class="fas fa-dollar-sign"></i> Total a pagar:</div>
+            <div class="detail-label"><i class="fas fa-bs"></i> Total a pagar:</div>
             <div class="detail-value">
-                @php
-                    $precios = ['Blue' => 49, 'Gold' => 89, 'Platinum' => 149];
-                    $totalUSD = ($precios[$reserva->experiencia] ?? 49) * $reserva->personas;
-                    $totalBOB = $totalUSD * 6.96;
-                @endphp
-                Bs {{ number_format($totalBOB, 0) }}
-                <span style="font-size: 0.75rem; color: #999;">(USD ${{ number_format($totalUSD, 2) }})</span>
+                Bs {{ number_format($totalBolivianos, 2, ',', '.') }}
+                <span style="font-size: 0.75rem; color: #999;">(~ USD ${{ number_format($totalUSD, 2) }})</span>
             </div>
         </div>
     </div>
@@ -426,11 +481,14 @@
             </div>
             
             <div id="qr-container" class="qr-container active">
-                <img src="{{ asset('img/qr.png') }}" alt="Código QR para pago JACHA TOURS">
-                <p style="margin-top: 1rem; color: #666; font-size: 0.8rem;">
+                <img id="qrImage" src="{{ asset('img/qr.png') }}" alt="Código QR para pago JACHA TOURS" onerror="this.src='https://placehold.co/220x220/111/c9a84c?text=QR+JACHA'">
+                <p style="margin-top: 1rem; color: #aaa; font-size: 0.8rem;">
                     <i class="fas fa-mobile-alt"></i> Escanea el QR con tu banca móvil<br>
                     <strong style="color: var(--gold);">Referencia: {{ $reserva->codigo_reserva }}</strong>
                 </p>
+                <button class="btn-download-qr" onclick="descargarQR()">
+                    <i class="fas fa-download"></i> Descargar Código QR
+                </button>
             </div>
             
             <div id="account-container" class="account-container">
@@ -447,12 +505,16 @@
                     <div class="account-value">EMILSON EDSON FLORES CHAMBI<button class="copy-btn" onclick="copiarTexto('EMILSON EDSON FLORES CHAMBI')">Copiar</button></div>
                 </div>
                 <div class="account-row">
+                    <span class="account-label"><i class="fas fa-hashtag"></i> CI / NIT:</span>
+                    <div class="account-value">12345678<button class="copy-btn" onclick="copiarTexto('12345678')">Copiar</button></div>
+                </div>
+                <div class="account-row">
                     <span class="account-label"><i class="fas fa-hashtag"></i> Referencia:</span>
                     <div class="account-value"><strong style="color: var(--gold);">{{ $reserva->codigo_reserva }}</strong><button class="copy-btn" onclick="copiarTexto('{{ $reserva->codigo_reserva }}')">Copiar</button></div>
                 </div>
                 <div class="account-row">
-                    <span class="account-label"><i class="fas fa-dollar-sign"></i> Monto a pagar:</span>
-                    <div class="account-value"><strong style="color: var(--gold); font-size: 1.1rem;">Bs {{ number_format($totalBOB, 0) }}</strong><button class="copy-btn" onclick="copiarTexto('{{ number_format($totalBOB, 0) }}')">Copiar</button></div>
+                    <span class="account-label"><i class="fas fa-bs"></i> Monto a pagar:</span>
+                    <div class="account-value"><strong style="color: var(--gold); font-size: 1.1rem;">Bs {{ number_format($totalBolivianos, 2, ',', '.') }}</strong><button class="copy-btn" onclick="copiarTexto('{{ number_format($totalBolivianos, 2, ',', '.') }}')">Copiar</button></div>
                 </div>
                 <div style="background: rgba(201,168,76,0.08); padding: 0.8rem; border-radius: 12px; margin-top: 1rem;">
                     <p style="font-size: 0.7rem; color: #999; text-align: center;"><i class="fas fa-info-circle"></i> Importante: Usa el código de reserva como referencia de pago</p>
@@ -466,15 +528,19 @@
     
     <div class="actions">
         <a href="{{ url('/') }}" class="btn-secondary"><i class="fas fa-home"></i> Volver al Inicio</a>
-        <a href="{{ route('reservas.mis-reservas') }}" class="btn-primary"><i class="fas fa-calendar-alt"></i> Mis Reservas</a>
+        <a href="{{ route('reservas.mis') }}" class="btn-primary"><i class="fas fa-calendar-alt"></i> Mis Reservas</a>
     </div>
 </div>
 
 <script>
     let selectedMethod = 'qr';
+    let isProcessing = false;
     
+    // Selección de método de pago
     document.querySelectorAll('.payment-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+            if (isProcessing) return;
+            
             document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             selectedMethod = this.dataset.method;
@@ -489,47 +555,113 @@
         });
     });
     
+    // Función para copiar texto
     function copiarTexto(texto) {
         navigator.clipboard.writeText(texto).then(() => {
-            mostrarNotificacion('¡Copiado!', `${texto} copiado al portapapeles`, 'success');
+            mostrarNotificacion('¡Copiado!', `${texto.substring(0, 30)}${texto.length > 30 ? '...' : ''} copiado al portapapeles`, 'success');
         }).catch(() => {
             mostrarNotificacion('Error', 'No se pudo copiar el texto', 'error');
         });
     }
     
+    // Función: Descargar código QR
+    async function descargarQR() {
+        const qrImage = document.getElementById('qrImage');
+        const codigoReserva = document.querySelector('.code-value').innerText;
+        
+        mostrarNotificacion('Descargando QR', 'Preparando imagen...', 'success');
+        
+        try {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                const link = document.createElement('a');
+                link.download = `QR_JACHA_${codigoReserva}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                mostrarNotificacion('QR Descargado', 'El código QR se ha guardado en tu dispositivo', 'success');
+            };
+            
+            img.onerror = () => {
+                mostrarNotificacion('Error', 'No se pudo descargar el código QR', 'error');
+            };
+            
+            img.src = qrImage.src;
+        } catch (error) {
+            console.error('Error al descargar QR:', error);
+            mostrarNotificacion('Error', 'No se pudo descargar el código QR', 'error');
+        }
+    }
+    
+    // Mostrar notificación toast
     function mostrarNotificacion(titulo, mensaje, tipo = 'success') {
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
         let icon = 'fa-check-circle';
         let borderColor = '#10b981';
-        if (tipo === 'error') { icon = 'fa-exclamation-circle'; borderColor = '#ef4444'; }
-        else if (tipo === 'warning') { icon = 'fa-exclamation-triangle'; borderColor = '#f59e0b'; }
+        
+        if (tipo === 'error') { 
+            icon = 'fa-exclamation-circle'; 
+            borderColor = '#ef4444'; 
+        } else if (tipo === 'warning') { 
+            icon = 'fa-exclamation-triangle'; 
+            borderColor = '#f59e0b'; 
+        }
+        
         toast.style.borderLeftColor = borderColor;
         toast.innerHTML = `<i class="fas ${icon}" style="font-size: 1.2rem;"></i><div><strong style="display: block; font-size: 0.85rem;">${titulo}</strong><span style="font-size: 0.75rem;">${mensaje}</span></div>`;
         document.body.appendChild(toast);
-        setTimeout(() => { toast.style.animation = 'slideOutRight 0.4s ease'; setTimeout(() => toast.remove(), 400); }, 3500);
+        
+        setTimeout(() => { 
+            toast.style.animation = 'slideOutRight 0.4s ease'; 
+            setTimeout(() => toast.remove(), 400); 
+        }, 3500);
     }
     
+    // Números de WhatsApp
     const adminPhone = "59169375465";
+    const backupPhone = "59167102033";
     
-    function enviarWhatsApp() {
-        const precios = {'Blue': 49, 'Gold': 89, 'Platinum': 149};
-        const totalUSD = (precios["{{ $reserva->experiencia }}"] || 49) * {{ $reserva->personas }};
-        const totalBOB = totalUSD * 6.96;
+    // Enviar pago por WhatsApp
+    async function enviarWhatsApp() {
+        if (isProcessing) return;
+        isProcessing = true;
         
-        const mensaje = `🏛️ *NUEVO PAGO REPORTADO* 🏛️
+        const payBtn = document.querySelector('.btn-pay');
+        const originalText = payBtn.innerHTML;
+        payBtn.innerHTML = '<span class="loader"></span> Procesando...';
+        payBtn.disabled = true;
+        
+        try {
+            const totalBolivianos = {{ $totalBolivianos ?? ($reserva->precio_unitario * $reserva->personas) }};
+            const nombreCliente = "{{ auth()->user()->nombre ?? auth()->user()->name ?? 'Cliente' }}";
+            const emailCliente = "{{ auth()->user()->email ?? 'No disponible' }}";
+            const telefonoCliente = "{{ $reserva->telefono ?? 'No registrado' }}";
+            const choletNombre = "{{ addslashes($reserva->cholet->nombre ?? 'No disponible') }}";
+            const fechaReserva = "{{ \Carbon\Carbon::parse($reserva->fecha)->format('d/m/Y') }}";
+            const experienciaNombre = "{{ $reserva->experienciaRelacion->nombre ?? $reserva->experiencia }}";
+            
+            const mensaje = `🏛️ *NUEVO PAGO REPORTADO* 🏛️
         
 ┌─────────────────────────────────
-│ *CÓDIGO:* {{ $reserva->codigo_reserva }}
-│ *CLIENTE:* {{ auth()->user()->nombre ?? 'Cliente' }}
-│ *EMAIL:* {{ auth()->user()->email ?? 'No disponible' }}
-│ *TELÉFONO:* {{ $reserva->telefono ?? 'No registrado' }}
+│ *CÓDIGO:* ${document.querySelector('.code-value').innerText}
+│ *CLIENTE:* ${nombreCliente}
+│ *EMAIL:* ${emailCliente}
+│ *TELÉFONO:* ${telefonoCliente}
 ├─────────────────────────────────
-│ *CHOLET:* {{ addslashes($reserva->cholet->nombre) }}
-│ *FECHA:* {{ \Carbon\Carbon::parse($reserva->fecha)->format('d/m/Y') }}
-│ *EXPERIENCIA:* {{ $reserva->experiencia }}
+│ *CHOLET:* ${choletNombre}
+│ *FECHA:* ${fechaReserva}
+│ *EXPERIENCIA:* ${experienciaNombre}
 │ *PERSONAS:* {{ $reserva->personas }}
-│ *TOTAL:* Bs ${totalBOB} (USD $${totalUSD})
+│ *TOTAL:* Bs ${Math.round(totalBolivianos).toLocaleString()}
 └─────────────────────────────────
 
 ✅ *El cliente reporta haber realizado el pago*
@@ -538,42 +670,97 @@
 
 ---
 📱 JACHA TOURS - Sistema de Reservas`;
-        
-        const mensajeCodificado = encodeURIComponent(mensaje);
-        window.open(`https://wa.me/${adminPhone}?text=${mensajeCodificado}`, '_blank');
-        
-        document.getElementById('payment-section').style.display = 'none';
-        const statusDiv = document.getElementById('payment-status');
-        statusDiv.style.display = 'block';
-        statusDiv.className = 'payment-status pending';
-        statusDiv.innerHTML = `<i class="fas fa-clock" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i><strong>¡Pago reportado!</strong><br>Hemos notificado al administrador. En breve recibirás la confirmación.`;
-        mostrarNotificacion('¡Gracias por tu pago!', 'Hemos notificado al administrador', 'success');
-    }
-    
-    function cancelarReserva() {
-        if (confirm('¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.')) {
-            fetch('{{ route("reservas.cancelar", $reserva->id) }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('payment-section').style.display = 'none';
-                    const statusDiv = document.getElementById('payment-status');
-                    statusDiv.style.display = 'block';
-                    statusDiv.className = 'payment-status cancelled';
-                    statusDiv.innerHTML = `<i class="fas fa-times-circle" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i><strong>Reserva Cancelada</strong><br>Tu reserva ha sido cancelada exitosamente.`;
-                    mostrarNotificacion('Reserva cancelada', 'Tu reserva ha sido cancelada', 'warning');
-                    setTimeout(() => { window.location.href = '{{ url("/") }}'; }, 3000);
-                }
-            })
-            .catch(err => { mostrarNotificacion('Error', 'No se pudo cancelar la reserva', 'error'); });
+            
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            window.open(`https://wa.me/${adminPhone}?text=${mensajeCodificado}`, '_blank');
+            
+            // Ocultar sección de pago y mostrar mensaje
+            document.getElementById('payment-section').style.display = 'none';
+            const statusDiv = document.getElementById('payment-status');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'payment-status pending';
+            statusDiv.innerHTML = `
+                <i class="fas fa-clock" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
+                <strong>¡Pago reportado!</strong><br>
+                Hemos notificado al administrador. En breve recibirás la confirmación.<br><br>
+                <small>✅ Guarda tu código de reserva: <strong>{{ $reserva->codigo_reserva }}</strong></small>
+            `;
+            mostrarNotificacion('¡Gracias por tu pago!', 'Hemos notificado al administrador', 'success');
+            
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarNotificacion('Error', 'No se pudo procesar tu pago', 'error');
+        } finally {
+            isProcessing = false;
+            payBtn.innerHTML = originalText;
+            payBtn.disabled = false;
         }
     }
     
+    // Cancelar reserva
+    async function cancelarReserva() {
+        if (isProcessing) return;
+        
+        if (!confirm('¿Estás seguro de que deseas cancelar esta reserva? Esta acción no se puede deshacer.')) return;
+        
+        isProcessing = true;
+        const cancelBtn = document.querySelector('.btn-cancel');
+        const originalText = cancelBtn.innerHTML;
+        cancelBtn.innerHTML = '<span class="loader"></span> Cancelando...';
+        cancelBtn.disabled = true;
+        
+        try {
+            const response = await fetch('{{ route("reservas.cancelar", $reserva->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('payment-section').style.display = 'none';
+                const statusDiv = document.getElementById('payment-status');
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'payment-status cancelled';
+                statusDiv.innerHTML = `
+                    <i class="fas fa-times-circle" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
+                    <strong>Reserva Cancelada</strong><br>
+                    Tu reserva ha sido cancelada exitosamente.<br><br>
+                    <small>Serás redirigido al inicio en unos segundos...</small>
+                `;
+                mostrarNotificacion('Reserva cancelada', 'Tu reserva ha sido cancelada exitosamente', 'warning');
+                
+                setTimeout(() => { 
+                    window.location.href = '{{ url("/") }}'; 
+                }, 3000);
+            } else {
+                mostrarNotificacion('Error', data.message || 'No se pudo cancelar la reserva', 'error');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+            mostrarNotificacion('Error', 'Ocurrió un error al cancelar la reserva', 'error');
+        } finally {
+            isProcessing = false;
+            cancelBtn.innerHTML = originalText;
+            cancelBtn.disabled = false;
+        }
+    }
+    
+    // Mostrar mensajes de sesión
     @if(session('success'))
         mostrarNotificacion('Éxito', '{{ session('success') }}', 'success');
+    @endif
+    
+    @if(session('error'))
+        mostrarNotificacion('Error', '{{ session('error') }}', 'error');
+    @endif
+    
+    @if(session('warning'))
+        mostrarNotificacion('Atención', '{{ session('warning') }}', 'warning');
     @endif
 </script>
 </body>

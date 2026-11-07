@@ -2,1200 +2,1623 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $cholet->nombre }} | JACHA TOURS - Circuito de Cholets</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <!-- AOS Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    <!-- Swiper -->
-    <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+    <title>{{ $cholet->nombre }} | Experiencia de Lujo en El Alto | JACHA TOURS</title>
+    <meta name="description" content="Descubre {{ $cholet->nombre }}, una experiencia de lujo única en El Alto, Bolivia.">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:title" content="{{ $cholet->nombre }} | JACHA TOURS">
+    <meta property="og:description" content="{{ Str::limit($cholet->descripcion, 160) }}">
+    <meta property="og:image" content="{{ asset('storage/cholets/' . $cholet->imagen) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
     <style>
-        /* ========== VARIABLES - TEMA NEGRO Y DORADO ========== */
+        /* ===== VARIABLES ===== */
         :root {
-            --black: #0a0a0a;
-            --black-light: #111111;
-            --black-medium: #1a1a1a;
-            --black-lighter: #222222;
-            --gold: #c9a84c;
-            --gold-light: #e4c46c;
-            --gold-dark: #a8893a;
-            --gold-pale: #d4b85c;
-            --white: #ffffff;
-            --white-soft: #f5f5f5;
-            --white-muted: #999999;
-            --white-dim: #666666;
-            --border-subtle: rgba(201, 168, 76, 0.15);
-            --border-medium: rgba(201, 168, 76, 0.3);
-            --border-light: rgba(201, 168, 76, 0.5);
-            --overlay-dark: rgba(0, 0, 0, 0.85);
-            --serif: 'Cormorant Garamond', Georgia, serif;
-            --sans: 'DM Sans', sans-serif;
-            --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --black:       #080808;
+            --black-2:     #0e0e0e;
+            --black-3:     #151515;
+            --black-4:     #1c1c1c;
+            --black-5:     #252525;
+            --gold:        #C9A84C;
+            --gold-bright: #E8C96A;
+            --gold-muted:  #8A6E30;
+            --gold-thin:   rgba(201,168,76,0.18);
+            --gold-glow:   rgba(201,168,76,0.08);
+            --cream:       #F5EDD8;
+            --cream-dim:   #C8BAA0;
+            --cream-faint: #887A61;
+            --white:       #FFFFFF;
+            --font-display: 'DM Serif Display', serif;
+            --font-serif:   'Playfair Display', serif;
+            --font-sans:    'DM Sans', sans-serif;
+            --ease-luxury:  cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ===== RESET ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             background: var(--black);
-            color: var(--white-soft);
-            font-family: var(--sans);
+            color: var(--cream-dim);
+            font-family: var(--font-sans);
+            font-weight: 300;
+            line-height: 1.65;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        img {
-            display: block;
-            max-width: 100%;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--black-medium);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 20px;
-        }
-
-        /* Toast */
-        .toast-container {
+        body::after {
+            content: '';
             position: fixed;
-            top: 30px;
-            right: 30px;
-            z-index: 9000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            background: var(--black-lighter);
-            color: var(--white-soft);
-            padding: 14px 24px;
-            border-radius: 4px;
-            font-size: 0.82rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideInR 0.5s var(--ease-out), fadeOut 0.4s ease 3s forwards;
-            min-width: 260px;
-            border-left: 3px solid var(--gold);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-        }
-        .toast i { color: var(--gold); }
-        @keyframes slideInR {
-            from { transform: translateX(110%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translateX(20px); }
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 9998;
         }
 
-        /* Header */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -40vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120vw;
+            height: 80vh;
+            background: radial-gradient(ellipse, rgba(201,168,76,0.04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 5%;
+            position: relative;
+            z-index: 2;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== HEADER ===== */
         .header {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             width: 100%;
-            z-index: 800;
-            padding: 28px 6%;
+            z-index: 900;
+            padding: 28px 5%;
+            transition: padding 0.5s var(--ease-luxury), background 0.5s;
+        }
+        .header--scrolled {
+            padding: 16px 5%;
+            background: rgba(8,8,8,0.97);
+            border-bottom: 1px solid var(--gold-thin);
+            backdrop-filter: blur(24px);
+        }
+        .header__inner {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            transition: all 0.6s var(--ease);
-            background: transparent;
         }
-        .header.scrolled {
-            padding: 18px 6%;
-            background: rgba(10, 10, 10, 0.98);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
+
+        /* ===== LOGO MÁS GRANDE ===== */
+        .logo {
+            height: 80px;
+            width: auto;
+            transition: height 0.4s var(--ease-luxury), filter 0.4s;
+            filter: drop-shadow(0 0 15px rgba(201,168,76,0.15));
         }
-        .header__logo img {
-            width: 160px;
-            transition: 0.4s var(--ease);
-            filter: brightness(1.2);
+        .header--scrolled .logo {
+            height: 60px;
+            filter: drop-shadow(0 0 10px rgba(201,168,76,0.1));
         }
-        .header__nav {
-            display: flex;
-            align-items: center;
-            gap: 40px;
+
+        @media (max-width: 768px) {
+            .logo { height: 60px; }
+            .header--scrolled .logo { height: 45px; }
         }
-        .nav-link {
-            font-family: var(--sans);
-            font-size: 0.72rem;
-            font-weight: 500;
-            letter-spacing: 0.18em;
+
+        .nav { display: flex; align-items: center; gap: 44px; }
+        .nav__link {
+            font-size: 11px;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--cream-faint);
             transition: color 0.3s;
             position: relative;
         }
-        .nav-link::after {
+        .nav__link::after {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
+            bottom: -4px; left: 0;
+            width: 0; height: 1px;
             background: var(--gold);
-            transition: width 0.4s var(--ease);
+            transition: width 0.4s var(--ease-luxury);
         }
-        .nav-link:hover { color: var(--gold-light); }
-        .nav-link:hover::after { width: 100%; }
+        .nav__link:hover { color: var(--gold); }
+        .nav__link:hover::after { width: 100%; }
 
-        .btn-login {
-            font-size: 0.72rem;
-            font-weight: 500;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--gold);
-            border: 1px solid var(--border-light);
-            padding: 10px 24px;
-            border-radius: 2px;
-            transition: all 0.35s var(--ease);
-            background: transparent;
-            cursor: pointer;
-        }
-        .btn-login:hover {
-            background: var(--gold);
-            border-color: var(--gold);
-            color: var(--black);
-            box-shadow: 0 0 25px rgba(201, 168, 76, 0.3);
-        }
-
-        /* Hero */
-        .hero {
-            position: relative;
-            height: 100vh;
-            min-height: 700px;
-            overflow: hidden;
-            background: var(--black);
-        }
-        .hero-swiper {
-            width: 100%;
-            height: 100%;
-        }
-        .hero-swiper .swiper-slide img,
-        .hero-swiper .swiper-slide video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .hero-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            background: linear-gradient(160deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.5) 40%, rgba(10,10,10,0.95) 100%);
-        }
-        .hero-content {
-            position: absolute;
-            z-index: 10;
-            bottom: 12%;
-            left: 6%;
-            max-width: 720px;
-        }
-        .hero-eyebrow {
-            display: flex;
+        .btn {
+            display: inline-flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 22px;
-        }
-        .hero-eyebrow .rule {
-            width: 40px;
-            height: 1px;
-            background: var(--gold);
-        }
-        .hero-eyebrow span {
-            font-family: var(--sans);
-            font-size: 0.68rem;
-            font-weight: 500;
-            letter-spacing: 0.28em;
-            text-transform: uppercase;
-            color: var(--gold-light);
-        }
-        .hero-title {
-            font-family: var(--serif);
-            font-size: clamp(3.5rem, 7vw, 6.5rem);
-            font-weight: 300;
-            line-height: 0.95;
-            letter-spacing: -0.02em;
-            color: var(--white);
-            margin-bottom: 28px;
-        }
-        .hero-title em {
-            font-style: italic;
-            font-weight: 400;
-            color: var(--gold);
-        }
-        .hero-sub {
-            font-family: var(--sans);
-            font-size: 0.95rem;
-            font-weight: 300;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 480px;
-            margin-bottom: 42px;
-        }
-        .hero-actions {
-            display: flex;
-            gap: 18px;
-            align-items: center;
-        }
-        .btn-primary-hero {
-            font-family: var(--sans);
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            background: var(--gold);
-            color: var(--black);
-            padding: 15px 36px;
-            border-radius: 2px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.4s var(--ease);
-        }
-        .btn-primary-hero:hover {
-            background: var(--gold-light);
-            transform: translateY(-2px);
-            box-shadow: 0 14px 40px rgba(201, 168, 76, 0.5);
-        }
-        .btn-ghost-hero {
-            font-family: var(--sans);
-            font-size: 0.72rem;
+            gap: 10px;
+            padding: 12px 28px;
+            font-family: var(--font-sans);
+            font-size: 11px;
             font-weight: 500;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.6);
-            background: none;
-            border: none;
             cursor: pointer;
+            border: none;
+            transition: all 0.4s var(--ease-luxury);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn--gold {
+            background: var(--gold);
+            color: var(--black);
+        }
+        .btn--gold::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        .btn--gold:hover::before { transform: translateX(100%); }
+        .btn--gold:hover {
+            background: var(--gold-bright);
+            box-shadow: 0 0 40px rgba(201,168,76,0.3);
+            transform: translateY(-2px);
+        }
+        .btn--ghost {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold-thin);
+        }
+        .btn--ghost:hover {
+            border-color: var(--gold);
+            background: var(--gold-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ===== HERO CON CARRUSEL ===== */
+        .hero {
+            height: 100svh;
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero__swiper {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero__slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--black-2);
+        }
+
+        .hero__slide img,
+        .hero__slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .hero__slide video {
+            background: var(--black);
+        }
+
+        /* Efecto de zoom suave en imágenes */
+        .hero__slide img {
+            transform: scale(1.05);
+            transition: transform 8s ease-out;
+        }
+        .swiper-slide-active .hero__slide img {
+            transform: scale(1);
+        }
+
+        .hero__overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background:
+                linear-gradient(to right, rgba(8,8,8,0.88) 0%, rgba(8,8,8,0.3) 55%, transparent 100%),
+                linear-gradient(to top, rgba(8,8,8,0.97) 0%, rgba(8,8,8,0.4) 30%, transparent 60%);
+        }
+
+        .hero__rule {
+            position: absolute;
+            left: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 40vh;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            z-index: 3;
+            opacity: 0.4;
+        }
+
+        .hero__content {
+            position: absolute;
+            bottom: 12%;
+            left: 5%; right: 5%;
+            z-index: 4;
+            max-width: 780px;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .eyebrow__line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.7;
+        }
+        .eyebrow__text {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .hero__title {
+            font-family: var(--font-display);
+            font-size: clamp(56px, 9vw, 108px);
+            line-height: 0.92;
+            color: var(--white);
+            margin-bottom: 32px;
+        }
+        .hero__title em {
+            display: block;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .hero__meta {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 44px;
+            flex-wrap: wrap;
+        }
+        .hero__meta-item {
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            color: var(--cream-dim);
         }
-        .btn-ghost-hero:hover { color: var(--gold-light); }
+        .hero__meta-item i { color: var(--gold); font-size: 14px; }
 
-        /* Sections */
-        .section {
-            padding: 110px 6%;
-            background: var(--black);
+        .hero__actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
         }
-        .container {
-            max-width: 1360px;
-            margin: auto;
+
+        .hero__scroll {
+            position: absolute;
+            bottom: 40px;
+            right: 5%;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--cream-faint);
+            writing-mode: vertical-rl;
         }
-        .eyebrow {
+        .hero__scroll::after {
+            content: '';
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+        @keyframes scrollLine {
+            0%, 100% { opacity: 0.4; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(0.6); transform-origin: top; }
+        }
+
+        /* ===== SWIPER CONTROLES ===== */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: var(--gold) !important;
+            width: 50px !important;
+            height: 50px !important;
+            background: rgba(8,8,8,0.5) !important;
+            border: 1px solid var(--gold-thin) !important;
+            border-radius: 50% !important;
+            transition: all 0.4s var(--ease-luxury) !important;
+            backdrop-filter: blur(8px) !important;
+        }
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            background: var(--gold) !important;
+            color: var(--black) !important;
+            border-color: var(--gold) !important;
+            transform: scale(1.1) !important;
+        }
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background: rgba(255,255,255,0.3) !important;
+            opacity: 1 !important;
+            width: 10px !important;
+            height: 10px !important;
+            transition: all 0.3s !important;
+        }
+        .swiper-pagination-bullet-active {
+            background: var(--gold) !important;
+            width: 30px !important;
+            border-radius: 10px !important;
+        }
+
+        /* ===== SECCIONES ===== */
+        section { padding: 110px 0; position: relative; }
+
+        .section-header { margin-bottom: 64px; }
+
+        .section-label {
             display: flex;
             align-items: center;
             gap: 14px;
             margin-bottom: 18px;
         }
-        .eyebrow .rule {
-            width: 32px;
-            height: 1px;
+        .section-label__line {
+            flex-shrink: 0;
+            width: 36px; height: 1px;
             background: var(--gold);
+            opacity: 0.6;
         }
-        .eyebrow span {
-            font-size: 0.68rem;
+        .section-label__text {
+            font-size: 10px;
             font-weight: 500;
-            letter-spacing: 0.26em;
+            letter-spacing: 0.28em;
             text-transform: uppercase;
             color: var(--gold);
         }
+
         .section-title {
-            font-family: var(--serif);
-            font-size: clamp(2.6rem, 4.5vw, 4.2rem);
-            font-weight: 300;
-            line-height: 1.05;
-            margin-bottom: 60px;
+            font-family: var(--font-serif);
+            font-size: clamp(36px, 4.5vw, 60px);
+            font-weight: 400;
+            line-height: 1.1;
             color: var(--white);
         }
         .section-title em {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .desc-section {
+            background: var(--black-2);
+            border-top: 1px solid var(--gold-thin);
+            border-bottom: 1px solid var(--gold-thin);
+            overflow: hidden;
+        }
+
+        .desc-inner {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0;
+            min-height: 420px;
+        }
+
+        .desc-aside {
+            border-right: 1px solid var(--gold-thin);
+            padding: 72px 60px 72px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .desc-aside__ornament {
+            font-family: var(--font-display);
+            font-size: 160px;
+            line-height: 1;
+            color: var(--gold);
+            opacity: 0.07;
+            font-style: italic;
+            user-select: none;
+        }
+
+        .desc-aside__quote {
+            font-family: var(--font-serif);
+            font-size: 14px;
             font-style: italic;
             color: var(--gold);
+            letter-spacing: 0.04em;
+            line-height: 1.6;
         }
 
-        /* Stats */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            border-top: 1px solid var(--border-subtle);
-            border-bottom: 1px solid var(--border-subtle);
-            margin-top: 70px;
-        }
-        .stat-item {
-            padding: 40px 36px;
-            border-right: 1px solid var(--border-subtle);
-            transition: background 0.3s;
-        }
-        .stat-item:last-child { border-right: none; }
-        .stat-item.clickable { cursor: pointer; }
-        .stat-item.clickable:hover { background: rgba(201, 168, 76, 0.05); }
-        .stat-label {
-            font-size: 0.65rem;
-            font-weight: 500;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--white-dim);
-            margin-bottom: 10px;
-        }
-        .stat-value {
-            font-family: var(--serif);
-            font-size: 1.5rem;
-            font-weight: 400;
-            color: var(--white);
-        }
-        .stat-cta {
-            margin-top: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.66rem;
-            font-weight: 500;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--gold);
+        .desc-body {
+            padding: 72px 0 72px 72px;
         }
 
-        .map-wrapper {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.8s var(--ease-out);
+        .desc-body__text {
+            font-family: var(--font-sans);
+            font-size: 17px;
+            line-height: 1.85;
+            color: var(--cream-dim);
+            font-weight: 300;
         }
-        .map-wrapper.open { max-height: 460px; }
-        .map-inner {
-            margin-top: 2px;
-            height: 420px;
-            position: relative;
-            border: 1px solid var(--border-subtle);
-        }
-        .map-inner iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            filter: grayscale(30%);
-        }
-        .map-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            z-index: 5;
-            width: 32px;
-            height: 32px;
-            background: var(--black);
-            color: var(--gold);
-            border: 1px solid var(--border-light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .desc-body__text p { margin-bottom: 1.4em; }
+        .desc-body__text p:last-child { margin-bottom: 0; }
+        .desc-body__text strong { color: var(--gold); font-weight: 500; }
 
-        /* Gallery */
+        .gallery-section { background: var(--black-2); }
+
         .gallery-masonry {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            grid-auto-rows: 90px;
-            gap: 10px;
-            margin-top: 60px;
+            grid-auto-rows: 80px;
+            gap: 6px;
+            margin-top: 56px;
         }
-        .g-item {
+
+        .gitem {
+            position: relative;
             overflow: hidden;
             cursor: pointer;
-            position: relative;
-            background: var(--black-lighter);
-            border: 1px solid var(--border-subtle);
+            background: var(--black-3);
         }
-        .g-item:nth-child(1) { grid-column: span 7; grid-row: span 4; }
-        .g-item:nth-child(2) { grid-column: span 5; grid-row: span 2; }
-        .g-item:nth-child(3) { grid-column: span 5; grid-row: span 2; }
-        .g-item:nth-child(4) { grid-column: span 4; grid-row: span 3; }
-        .g-item:nth-child(5) { grid-column: span 4; grid-row: span 3; }
-        .g-item:nth-child(6) { grid-column: span 4; grid-row: span 3; }
-        .g-item img {
-            width: 100%;
-            height: 100%;
+        .gitem:nth-child(1) { grid-column: span 5; grid-row: span 5; }
+        .gitem:nth-child(2) { grid-column: span 7; grid-row: span 3; }
+        .gitem:nth-child(3) { grid-column: span 4; grid-row: span 3; }
+        .gitem:nth-child(4) { grid-column: span 3; grid-row: span 2; }
+        .gitem:nth-child(5) { grid-column: span 5; grid-row: span 4; }
+        .gitem:nth-child(6) { grid-column: span 7; grid-row: span 4; }
+        .gitem:nth-child(7) { grid-column: span 4; grid-row: span 2; }
+
+        .gitem img {
+            width: 100%; height: 100%;
             object-fit: cover;
-            transition: transform 0.7s var(--ease);
+            transition: transform 1.4s var(--ease-luxury);
         }
-        .g-item:hover img { transform: scale(1.06); }
-        .g-item-overlay {
+        .gitem:hover img { transform: scale(1.07); }
+
+        .gitem__overlay {
             position: absolute;
             inset: 0;
-            background: rgba(201, 168, 76, 0.3);
+            background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(8,8,8,0.75));
+            opacity: 0;
+            transition: opacity 0.4s;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.4s;
         }
-        .g-item:hover .g-item-overlay { opacity: 1; }
+        .gitem:hover .gitem__overlay { opacity: 1; }
+        .gitem__overlay i {
+            font-size: 28px;
+            color: var(--gold);
+            transform: scale(0.7);
+            transition: transform 0.3s;
+        }
+        .gitem:hover .gitem__overlay i { transform: scale(1); }
 
-        /* Amenities */
-        .amenities-grid {
+        .amenities-section { background: var(--black); }
+
+        .amenities-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 1px;
-            background: rgba(201, 168, 76, 0.08);
-            margin-top: 60px;
-        }
-        .amenity {
-            background: var(--black-medium);
-            padding: 44px 32px;
-            border-top: 1px solid rgba(201, 168, 76, 0.08);
-            transition: all 0.4s;
-            position: relative;
-        }
-        .amenity::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gold);
-            transition: width 0.5s var(--ease);
-        }
-        .amenity:hover::before { width: 100%; }
-        .amenity-num {
-            font-family: var(--serif);
-            font-size: 0.75rem;
-            color: var(--gold);
-            margin-bottom: 28px;
-        }
-        .amenity-icon { font-size: 1.6rem; color: var(--gold-pale); margin-bottom: 18px; }
-        .amenity-title {
-            font-family: var(--serif);
-            font-size: 1.3rem;
-            font-weight: 400;
-            color: var(--white);
-            margin-bottom: 10px;
-        }
-        .amenity-desc {
-            font-size: 0.82rem;
-            font-weight: 300;
-            line-height: 1.7;
-            color: var(--white-muted);
+            background: var(--gold-thin);
+            border: 1px solid var(--gold-thin);
+            margin-top: 56px;
         }
 
-        /* Rating */
-        .rating-wrap {
-            max-width: 680px;
+        .amenity {
+            background: var(--black);
+            padding: 52px 36px;
+            transition: background 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .amenity::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 36px;
+            width: 0; height: 1px;
+            background: var(--gold);
+            transition: width 0.5s var(--ease-luxury);
+        }
+        .amenity:hover::after { width: calc(100% - 72px); }
+        .amenity:hover { background: var(--black-3); }
+
+        .amenity__icon-wrap {
+            width: 52px; height: 52px;
+            border: 1px solid var(--gold-thin);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .amenity:hover .amenity__icon-wrap {
+            border-color: var(--gold);
+            background: var(--gold-glow);
+        }
+        .amenity__icon-wrap i { font-size: 22px; color: var(--gold); }
+
+        .amenity__title {
+            font-family: var(--font-serif);
+            font-size: 19px;
+            font-weight: 400;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+        .amenity__desc {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--cream-faint);
+        }
+
+        .videos-section { background: var(--black-2); }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 56px;
+        }
+
+        .video-card {
+            border: 1px solid var(--gold-thin);
+            overflow: hidden;
+            transition: all 0.5s var(--ease-luxury);
+            position: relative;
+        }
+        .video-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-6px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+        .video-card video {
+            display: block;
+            width: 100%; height: 230px;
+            object-fit: cover;
+        }
+        .video-card__body { padding: 28px; }
+        .video-card__title {
+            font-family: var(--font-serif);
+            font-size: 18px;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        .video-card__sub {
+            font-size: 12px;
+            color: var(--cream-faint);
+        }
+
+        .rating-section {
+            background: var(--black);
+            border-top: 1px solid var(--gold-thin);
+        }
+
+        .rating-inner {
+            max-width: 560px;
             margin: 0 auto;
             text-align: center;
-            padding-top: 30px;
         }
+
         .stars-row {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 36px 0 20px;
+            gap: 20px;
+            margin: 48px 0 16px;
         }
         .star-btn {
             background: none;
             border: none;
+            font-size: 44px;
+            color: rgba(255,255,255,0.06);
             cursor: pointer;
-            font-size: 2.2rem;
-            color: rgba(255, 255, 255, 0.1);
-            transition: transform 0.25s;
+            transition: color 0.2s, transform 0.2s;
+            line-height: 1;
         }
-        .star-btn.lit i { color: var(--gold); }
-        .btn-rate {
-            font-family: var(--sans);
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            background: var(--gold);
-            color: var(--black);
-            padding: 15px 40px;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
+        .star-btn:hover, .star-btn.active {
+            color: var(--gold);
+            transform: scale(1.12);
         }
 
-        /* Modal RESERVA con horarios */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(8px);
-            z-index: 9000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s;
+        .rating-feedback {
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 0.08em;
+            min-height: 28px;
+            margin-bottom: 28px;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-box {
-            background: var(--black-lighter);
-            width: 100%;
-            max-width: 550px;
-            padding: 40px 40px;
-            position: relative;
-            transform: translateY(28px);
-            transition: transform 0.5s var(--ease-out);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-        }
-        .modal-overlay.active .modal-box { transform: translateY(0); }
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: var(--white-dim);
-        }
-        .modal-close:hover { color: var(--gold); }
-        .modal-title {
-            font-family: var(--serif);
-            font-size: 1.8rem;
-            font-weight: 300;
-            color: var(--white);
-            margin-bottom: 25px;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--white-dim);
-            margin-bottom: 8px;
-        }
-        .form-input, .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--black);
-            border: 1px solid var(--border-subtle);
-            color: var(--white);
-            font-family: var(--sans);
-            font-size: 0.9rem;
-            outline: none;
-            transition: border-color 0.3s;
-            border-radius: 8px;
-        }
-        .form-input:focus, .form-select:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 15px rgba(201, 168, 76, 0.2);
-        }
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-        }
-        .btn-submit {
-            width: 100%;
-            margin-top: 10px;
-            padding: 14px;
-            background: var(--gold);
-            color: var(--black);
-            border: none;
-            cursor: pointer;
-            font-family: var(--sans);
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            border-radius: 8px;
-            transition: all 0.35s;
-        }
-        .btn-submit:hover {
-            background: var(--gold-light);
-            transform: translateY(-2px);
-        }
-
-        .cupos-info {
-            font-size: 0.7rem;
-            margin-top: 5px;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        .cupos-disponible { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .cupos-limitado { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-        .cupos-agotado { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: var(--gold);
-            animation: spin 0.6s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         .cta-band {
-            padding: 100px 6%;
-            background: var(--black);
+            background: var(--black-2);
+            padding: 0;
+            border-top: 1px solid var(--gold-thin);
+            border-bottom: 1px solid var(--gold-thin);
             position: relative;
+            overflow: hidden;
         }
-        .cta-inner {
-            max-width: 1360px;
-            margin: auto;
+        .cta-band::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 80% 50%, rgba(201,168,76,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cta-band__decor {
+            position: absolute;
+            right: 3%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--font-display);
+            font-size: 260px;
+            line-height: 1;
+            color: var(--gold);
+            opacity: 0.025;
+            user-select: none;
+            font-style: italic;
+        }
+
+        .cta-band__inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 80px 5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 40px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
         }
-        .btn-reserva {
-            flex-shrink: 0;
-            font-family: var(--sans);
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: 0.22em;
+
+        .cta-band__sub {
+            font-size: 11px;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            background: var(--gold);
-            color: var(--black);
-            padding: 20px 52px;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
+            color: var(--gold);
+            margin-bottom: 12px;
         }
-        .footer {
-            padding: 50px 6%;
-            background: var(--black);
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .footer-brand {
-            font-family: var(--serif);
-            font-size: 1.4rem;
+        .cta-band__title {
+            font-family: var(--font-serif);
+            font-size: clamp(32px, 3.5vw, 52px);
             font-weight: 400;
             color: var(--white);
+            line-height: 1.1;
         }
-        .footer-brand em { color: var(--gold); font-style: italic; }
+        .cta-band__title em { color: var(--gold); font-style: italic; }
 
-        @media (max-width: 900px) {
-            .stats-bar { grid-template-columns: repeat(2, 1fr); }
-            .amenities-grid { grid-template-columns: repeat(2, 1fr); }
-            .cta-inner { flex-direction: column; text-align: center; }
-            .gallery-masonry { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
-            .g-item { grid-column: span 1 !important; grid-row: span 1 !important; }
+        .footer {
+            padding: 60px 5% 40px;
+            text-align: center;
+            background: var(--black);
+            border-top: 1px solid var(--gold-thin);
         }
-        @media (max-width: 600px) {
-            .stats-bar { grid-template-columns: 1fr; }
-            .amenities-grid { grid-template-columns: 1fr; }
+        .footer__wordmark {
+            font-family: var(--font-display);
+            font-size: 30px;
+            color: var(--white);
+            letter-spacing: 0.12em;
+            margin-bottom: 10px;
+        }
+        .footer__wordmark em { color: var(--gold); font-style: italic; }
+        .footer__copy {
+            font-size: 12px;
+            color: var(--cream-faint);
+            letter-spacing: 0.08em;
+        }
+        .footer__divider {
+            width: 40px; height: 1px;
+            background: var(--gold);
+            opacity: 0.4;
+            margin: 20px auto;
+        }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(4,4,4,0.97);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        .lightbox--open { display: flex; }
+
+        .lightbox__img {
+            max-width: 88vw;
+            max-height: 84vh;
+            object-fit: contain;
+            border: 1px solid var(--gold-thin);
+        }
+        .lightbox__close {
+            position: absolute;
+            top: 32px; right: 40px;
+            font-size: 36px;
+            color: var(--gold);
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 0.3s;
+        }
+        .lightbox__close:hover { transform: rotate(90deg); }
+
+        .lb-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: 1px solid var(--gold-thin);
+            color: var(--gold);
+            font-size: 20px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .lb-nav:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+        .lb-nav--l { left: 32px; }
+        .lb-nav--r { right: 32px; }
+
+        .lightbox__counter {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            color: var(--cream-faint);
+        }
+
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(4,4,4,0.96);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+        .modal-bg--open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--black-2);
+            border: 1px solid var(--gold-thin);
+            width: 100%;
+            max-width: 520px;
+            padding: 52px 48px;
+            position: relative;
+            transform: translateY(24px);
+            transition: transform 0.5s var(--ease-luxury);
+        }
+        .modal-bg--open .modal { transform: translateY(0); }
+
+        .modal::before, .modal::after {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+        }
+        .modal::before {
+            top: -1px; right: -1px;
+            border-top: 1px solid var(--gold);
+            border-right: 1px solid var(--gold);
+        }
+        .modal::after {
+            bottom: -1px; left: -1px;
+            border-bottom: 1px solid var(--gold);
+            border-left: 1px solid var(--gold);
+        }
+
+        .modal__close {
+            position: absolute;
+            top: 20px; right: 24px;
+            background: none;
+            border: none;
+            color: var(--cream-faint);
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal__close:hover { color: var(--gold); }
+
+        .modal__title {
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--white);
+            margin-bottom: 36px;
+        }
+        .modal__title em { color: var(--gold); font-style: italic; }
+
+        .form-group { margin-bottom: 22px; }
+        .form-label {
+            display: block;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--gold-muted);
+            margin-bottom: 8px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--gold-thin);
+            color: var(--cream);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 300;
+            transition: border-color 0.3s, background 0.3s;
+            appearance: none;
+        }
+        .form-control::placeholder { color: var(--cream-faint); }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.04);
+        }
+        .form-control option { background: var(--black-2); color: var(--cream); }
+
+        .total-preview {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--gold);
+            letter-spacing: 0.04em;
+        }
+        .cupos-info {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .toast-stack {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--black-3);
+            border: 1px solid var(--gold-thin);
+            border-left: 2px solid var(--gold);
+            padding: 14px 22px;
+            font-size: 13px;
+            color: var(--cream);
+            animation: toastIn 0.4s var(--ease-luxury), toastOut 0.3s 2.7s forwards;
+            min-width: 260px;
+        }
+        .toast i { color: var(--gold); }
+        @keyframes toastIn {
+            from { transform: translateX(110%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastOut {
+            to { transform: translateX(30px); opacity: 0; }
+        }
+
+        @media (max-width: 1024px) {
+            .desc-inner { grid-template-columns: 1fr; }
+            .desc-aside { display: none; }
+            .desc-body { padding: 60px 0; }
+            .gallery-masonry { grid-template-columns: repeat(6, 1fr); }
+            .gitem:nth-child(n) { grid-column: span 3; grid-row: span 3; }
+            .nav { display: none; }
+        }
+        @media (max-width: 768px) {
+            .amenities-row { grid-template-columns: 1fr; }
+            .gallery-masonry { grid-template-columns: repeat(2, 1fr); }
+            .gitem:nth-child(n) { grid-column: span 1; grid-row: span 3; }
+            .cta-band__inner { flex-direction: column; text-align: center; }
+            section { padding: 72px 0; }
+            .modal { padding: 36px 28px; }
+            .hero__meta { gap: 16px; }
+            .hero__title { font-size: clamp(40px, 12vw, 60px); }
         }
     </style>
 </head>
 <body>
 
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-stack" id="toastStack"></div>
 
-<!-- HEADER -->
 <header class="header" id="header">
-    <a href="{{ url('/') }}" class="header__logo">
-        <img src="{{ asset('img/logo.png') }}" alt="JACHA TOURS">
-    </a>
-    <nav class="header__nav">
-        <a href="{{ url('/#inicio') }}" class="nav-link">Inicio</a>
-        <a href="{{ url('/#circuito') }}" class="nav-link">Circuito</a>
-        <a href="{{ url('/#experiencias') }}" class="nav-link">Experiencias</a>
-        <a href="{{ url('/#contacto') }}" class="nav-link">Contacto</a>
-    </nav>
-    @auth
-        <a href="{{ route('dashboard') }}" class="btn-login">
-            <i class="fas fa-user"></i> {{ Auth::user()->name ?? Auth::user()->nombre ?? 'Mi Cuenta' }}
-        </a>
-    @else
-        <a href="{{ route('login') }}" class="btn-login">
-            <i class="fas fa-user"></i> Iniciar Sesión
-        </a>
-    @endauth
+    <div class="header__inner">
+        <!-- LOGO MÁS GRANDE -->
+        <img src="{{ asset('img/logo.bl.png') }}" alt="JACHA TOURS" class="logo">
+        <nav class="nav">
+            <a href="{{ url('/#inicio') }}" class="nav__link">Inicio</a>
+            <a href="{{ url('/#circuito') }}" class="nav__link">Circuito</a>
+            <a href="{{ url('/#experiencias') }}" class="nav__link">Experiencias</a>
+            <a href="{{ url('/#contacto') }}" class="nav__link">Contacto</a>
+        </nav>
+        @auth
+            <a href="{{ route('dashboard') }}" class="btn btn--ghost"><i class="fas fa-user"></i> {{ Auth::user()->name ?? 'Mi Cuenta' }}</a>
+        @else
+            <a href="{{ route('login') }}" class="btn btn--ghost"><i class="fas fa-sign-in-alt"></i> Ingresar</a>
+        @endauth
+    </div>
 </header>
 
-<!-- HERO -->
-<div class="hero">
-    <div class="swiper hero-swiper" id="heroSwiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <img src="{{ asset('storage/cholets/' . $cholet->imagen) }}" alt="{{ $cholet->nombre }}">
-            </div>
+<!-- ===== HERO CON CARRUSEL PROFESIONAL ===== -->
+<section class="hero">
+    <div class="swiper hero__swiper" id="heroSwiper">
+        <div class="swiper-wrapper" id="heroSliderWrapper">
+            {{-- Las imágenes y videos se agregarán dinámicamente con JavaScript --}}
         </div>
-        <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
         <div class="swiper-pagination"></div>
     </div>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <div class="hero-eyebrow">
-            <div class="rule"></div>
-            <span>Experiencia Exclusiva · El Alto, Bolivia</span>
+
+    <div class="hero__overlay"></div>
+    <div class="hero__rule"></div>
+
+    <div class="hero__content" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1100">
+        <div class="eyebrow">
+            <div class="eyebrow__line"></div>
+            <span class="eyebrow__text">Arquitectura Andina Contemporánea</span>
         </div>
-        <h1 class="hero-title">{{ $cholet->nombre }}</h1>
-        <p class="hero-sub">{{ Str::limit($cholet->descripcion, 160) }}</p>
-        <div class="hero-actions">
-            <button class="btn-primary-hero" onclick="scrollToReserva()">Reservar Ahora →</button>
-            <button class="btn-ghost-hero" onclick="document.getElementById('galeria').scrollIntoView({behavior:'smooth'})">
-                <i class="fas fa-images"></i> Ver Galería
+        <h1 class="hero__title">
+            {{ $cholet->nombre }}
+            <em>El Alto</em>
+        </h1>
+        <div class="hero__meta">
+            <div class="hero__meta-item"><i class="fas fa-map-marker-alt"></i> El Alto, Bolivia</div>
+            <div class="hero__meta-item"><i class="fas fa-clock"></i> 4–6 horas</div>
+            <div class="hero__meta-item"><i class="fas fa-star"></i> <span id="avgRatingDisplay">{{ number_format($cholet->ratings()->avg('rating') ?? 4.9, 1) }}</span> valoración</div>
+        </div>
+        <div class="hero__actions">
+            <button class="btn btn--gold" onclick="scrollToReserva()">Reservar Experiencia</button>
+            <button class="btn btn--ghost" onclick="document.getElementById('galeria').scrollIntoView({behavior:'smooth'})">
+                <i class="fas fa-images"></i> Explorar Galería
             </button>
         </div>
     </div>
-</div>
 
-<!-- INFO SECTION -->
-<section class="section" style="padding-top:80px;padding-bottom:0;">
+    <div class="hero__scroll">Descubrir</div>
+</section>
+
+<!-- ===== DESCRIPCIÓN ===== -->
+<section class="desc-section">
     <div class="container">
-        <div class="eyebrow reveal">
-            <div class="rule"></div>
-            <span>Información</span>
-        </div>
-        <h2 class="section-title reveal reveal-delay-1">Detalles de la<br><em>Experiencia</em></h2>
-
-        <div class="stats-bar reveal">
-            <div class="stat-item clickable" onclick="toggleMap()" id="mapTrigger">
-                <div class="stat-label">Ubicación</div>
-                <div class="stat-value">{{ $cholet->ubicacion ?? 'El Alto, Bolivia' }}</div>
-                <div class="stat-cta"><span>Ver en mapa</span> <i class="fas fa-chevron-down" id="mapArrow"></i></div>
+        <div class="desc-inner" data-aos="fade-up" data-aos-duration="1000">
+            <div class="desc-aside">
+                <div class="desc-aside__ornament">"</div>
+                <div class="desc-aside__quote">
+                    Arquitectura que<br>nace del alma<br>andina
+                </div>
             </div>
-            <div class="stat-item"><div class="stat-label">Duración</div><div class="stat-value">4 – 6 horas</div></div>
-            <div class="stat-item"><div class="stat-label">Capacidad</div><div class="stat-value">Hasta 20 personas</div></div>
-            <div class="stat-item">
-                <div class="stat-label">Valoración</div>
-                <div class="stat-value" id="averageRating">{{ number_format($cholet->ratings()->avg('rating') ?? 4.9, 1) }} ★</div>
-            </div>
-        </div>
-
-        <div class="map-wrapper" id="mapWrapper">
-            <div class="map-inner">
-                <button class="map-close" onclick="toggleMap()"><i class="fas fa-times"></i></button>
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.5!2d-68.2!3d-16.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDMwJzAwLjAiUyA2OMKwMTInMDAuMCJX!5e0!3m2!1ses!2sbo!4v1" allowfullscreen loading="lazy"></iframe>
+            <div class="desc-body">
+                <div class="section-label" style="margin-bottom: 28px;">
+                    <div class="section-label__line"></div>
+                    <span class="section-label__text">Sobre este espacio</span>
+                </div>
+                <div class="desc-body__text">
+                    {!! nl2br(e($cholet->descripcion)) !!}
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- GALLERY -->
-<section class="section" id="galeria">
+<!-- ===== GALERÍA ===== -->
+<section id="galeria" class="gallery-section">
     <div class="container">
-        <div class="eyebrow reveal"><div class="rule"></div><span>Galería</span></div>
-        <h2 class="section-title reveal reveal-delay-1">Explora<br><em>Visualmente</em></h2>
+        <div class="section-header" data-aos="fade-up">
+            <div class="section-label"><div class="section-label__line"></div><span class="section-label__text">Galería Visual</span></div>
+            <h2 class="section-title">Explora <em>Visualmente</em></h2>
+        </div>
+
+        @php
+            $allImages = [];
+            if($cholet->imagen) $allImages[] = asset('storage/cholets/' . $cholet->imagen);
+            foreach($cholet->imagenes as $img) $allImages[] = asset('storage/cholets/galeria/' . $img->imagen);
+        @endphp
+
+        @if(count($allImages) > 0)
         <div class="gallery-masonry">
-            @for($i = 1; $i <= 6; $i++)
-            <div class="g-item reveal" onclick="openLightbox('{{ asset('storage/cholets/' . $cholet->imagen) }}')">
-                <img src="{{ asset('storage/cholets/' . $cholet->imagen) }}" alt="{{ $cholet->nombre }}">
-                <div class="g-item-overlay"><i class="fas fa-expand-alt"></i></div>
+            @foreach($allImages as $i => $src)
+                @if($i < 7)
+                <div class="gitem" data-aos="fade-up" data-aos-delay="{{ $i * 60 }}" onclick="openLB({{ $i }})">
+                    <img src="{{ $src }}" alt="Galería {{ $cholet->nombre }}" loading="lazy">
+                    <div class="gitem__overlay"><i class="fas fa-expand-alt"></i></div>
+                </div>
+                @endif
+            @endforeach
+        </div>
+
+        @if(count($allImages) > 7)
+        <div style="text-align:center; margin-top:44px;">
+            <button class="btn btn--ghost" onclick="openLB(0)"><i class="fas fa-images"></i> Ver todas las imágenes ({{ count($allImages) }})</button>
+        </div>
+        @endif
+        @endif
+    </div>
+</section>
+
+<!-- ===== AMENITIES ===== -->
+<section class="amenities-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <div class="section-label"><div class="section-label__line"></div><span class="section-label__text">Servicios Premium</span></div>
+            <h2 class="section-title">Lo que <em>incluye</em></h2>
+        </div>
+        <div class="amenities-row">
+            @php
+                $amenities = [
+                    ['icon'=>'fa-camera',           'title'=>'Fotografía Profesional', 'desc'=>'Sesión completa durante el recorrido con equipo profesional de alta gama.'],
+                    ['icon'=>'fa-language',          'title'=>'Guía Trilingüe',         'desc'=>'Español, Inglés y Aymara nativo para una experiencia auténtica.'],
+                    ['icon'=>'fa-champagne-glasses', 'title'=>'Degustación Gourmet',    'desc'=>'Bebidas premium y aperitivos seleccionados de la región andina.'],
+                    ['icon'=>'fa-car-side',          'title'=>'Transporte Ejecutivo',   'desc'=>'Servicio de recojo y retorno VIP incluido desde su hospedaje.'],
+                ];
+            @endphp
+            @foreach($amenities as $i => $a)
+            <div class="amenity" data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
+                <div class="amenity__icon-wrap"><i class="fas {{ $a['icon'] }}"></i></div>
+                <div class="amenity__title">{{ $a['title'] }}</div>
+                <div class="amenity__desc">{{ $a['desc'] }}</div>
             </div>
-            @endfor
+            @endforeach
         </div>
     </div>
 </section>
 
-<!-- AMENITIES -->
-<section class="section amenities-section">
+<!-- ===== VIDEOS ===== -->
+@if($cholet->videos && $cholet->videos->count() > 0)
+<section class="videos-section">
     <div class="container">
-        <div class="eyebrow reveal"><div class="rule"></div><span>Servicios Incluidos</span></div>
-        <h2 class="section-title reveal reveal-delay-1">Servicios<br><em>Premium</em></h2>
-        <div class="amenities-grid">
-            <div class="amenity reveal"><div class="amenity-num">01</div><div class="amenity-icon"><i class="fas fa-camera-retro"></i></div><div class="amenity-title">Fotografía Profesional</div><div class="amenity-desc">Sesión completa durante el tour</div></div>
-            <div class="amenity reveal reveal-delay-1"><div class="amenity-num">02</div><div class="amenity-icon"><i class="fas fa-language"></i></div><div class="amenity-title">Guía Trilingüe</div><div class="amenity-desc">Español, inglés y aymara</div></div>
-            <div class="amenity reveal reveal-delay-2"><div class="amenity-num">03</div><div class="amenity-icon"><i class="fas fa-wine-glass-alt"></i></div><div class="amenity-title">Degustación Gourmet</div><div class="amenity-desc">Bebidas premium y aperitivos</div></div>
-            <div class="amenity reveal reveal-delay-3"><div class="amenity-num">04</div><div class="amenity-icon"><i class="fas fa-car"></i></div><div class="amenity-title">Transporte Ejecutivo</div><div class="amenity-desc">Recojo y retorno VIP</div></div>
+        <div class="section-header" data-aos="fade-up">
+            <div class="section-label"><div class="section-label__line"></div><span class="section-label__text">Recorrido Audiovisual</span></div>
+            <h2 class="section-title">Vive la <em>Experiencia</em></h2>
+        </div>
+        <div class="videos-grid">
+            @foreach($cholet->videos as $video)
+            <div class="video-card" data-aos="fade-up">
+                <video controls muted preload="metadata">
+                    <source src="{{ asset('storage/videos/' . $video->url) }}" type="video/mp4">
+                </video>
+                <div class="video-card__body">
+                    <div class="video-card__title">{{ $video->titulo ?? $cholet->nombre }}</div>
+                    <div class="video-card__sub">Recorrido interior · El Alto, Bolivia</div>
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
 </section>
+@endif
 
-<!-- RATING -->
-<section class="section rating-section">
+<!-- ===== RATING ===== -->
+<section class="rating-section">
     <div class="container">
-        <div class="rating-wrap">
-            <div class="eyebrow reveal" style="justify-content:center;"><div class="rule"></div><span>Tu Opinión</span><div class="rule"></div></div>
-            <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">¿Qué te<br><em>pareció?</em></h2>
+        <div class="rating-inner" data-aos="fade-up">
+            <div class="section-label" style="justify-content:center;">
+                <div class="section-label__line"></div>
+                <span class="section-label__text">Tu Opinión</span>
+                <div class="section-label__line"></div>
+            </div>
+            <h2 class="section-title">¿Qué te <em>pareció?</em></h2>
+
             <div class="stars-row" id="starsRow">
-                <button class="star-btn" data-rating="1"><i class="fa-regular fa-star"></i></button>
-                <button class="star-btn" data-rating="2"><i class="fa-regular fa-star"></i></button>
-                <button class="star-btn" data-rating="3"><i class="fa-regular fa-star"></i></button>
-                <button class="star-btn" data-rating="4"><i class="fa-regular fa-star"></i></button>
-                <button class="star-btn" data-rating="5"><i class="fa-regular fa-star"></i></button>
+                @for($i=1; $i<=5; $i++)
+                <button class="star-btn" data-rating="{{ $i }}"><i class="fa-regular fa-star"></i></button>
+                @endfor
             </div>
-            <div class="rating-msg" id="ratingMsg"></div>
+
+            <div class="rating-feedback" id="ratingFeedback"></div>
+
             @auth
-                <button class="btn-rate" onclick="submitRating({{ $cholet->id }})">Enviar Valoración</button>
+                <button class="btn btn--gold" onclick="submitRating({{ $cholet->id }})" id="submitRatingBtn">
+                    <i class="fas fa-paper-plane"></i> Enviar Valoración
+                </button>
             @else
-                <p><a href="{{ route('login') }}" style="color:var(--gold);">Inicia sesión</a> para calificar</p>
+                <p style="font-size:14px;">
+                    <a href="{{ route('login') }}" style="color:var(--gold); border-bottom:1px solid var(--gold-thin);">Inicia sesión</a>
+                    para calificar esta experiencia
+                </p>
             @endauth
         </div>
     </div>
 </section>
 
-<!-- CTA RESERVA -->
+<!-- ===== CTA ===== -->
 <div class="cta-band" id="reservaSection">
-    <div class="cta-inner container">
-        <div class="cta-copy">
-            <div class="eyebrow"><div class="rule"></div><span>Disponibilidad inmediata</span></div>
-            <div class="cta-title">Reserva tu<br><em>experiencia</em></div>
+    <div class="cta-band__decor">JT</div>
+    <div class="cta-band__inner">
+        <div data-aos="fade-right">
+            <div class="cta-band__sub">Disponibilidad Inmediata</div>
+            <div class="cta-band__title">Reserva tu <em>experiencia</em></div>
         </div>
         @auth
-            <button class="btn-reserva" onclick="openModal()">Reservar Ahora</button>
+            <button class="btn btn--gold" onclick="openModal()" data-aos="fade-left" style="font-size:12px; padding:16px 40px;">
+                Reservar Ahora <i class="fas fa-arrow-right"></i>
+            </button>
         @else
-            <a href="{{ route('login') }}"><button class="btn-reserva">Iniciar Sesión</button></a>
+            <a href="{{ route('login') }}" class="btn btn--gold" data-aos="fade-left" style="font-size:12px; padding:16px 40px;">
+                Ingresar para Reservar <i class="fas fa-arrow-right"></i>
+            </a>
         @endauth
     </div>
 </div>
 
-<!-- FOOTER -->
+<!-- ===== FOOTER ===== -->
 <footer class="footer">
-    <div class="footer-brand">JACHA <em>TOURS</em></div>
-    <div class="footer-copy">© 2026 · Experiencias Premium en El Alto, Bolivia</div>
+    <div class="footer__wordmark">JACHA <em>TOURS</em></div>
+    <div class="footer__divider"></div>
+    <div class="footer__copy">© 2026 · Experiencias Premium en El Alto, Bolivia</div>
 </footer>
 
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97); z-index:9500; align-items:center; justify-content:center;">
-    <span class="lightbox-close" style="position:absolute; top:28px; right:32px; color:var(--gold); font-size:1.8rem; cursor:pointer;">&times;</span>
-    <img src="" id="lightboxImg" style="max-width:90vw; max-height:90vh; object-fit:contain;">
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+    <span class="lightbox__close" onclick="closeLB()">&times;</span>
+    <button class="lb-nav lb-nav--l" onclick="moveLB(-1)">&#10094;</button>
+    <button class="lb-nav lb-nav--r" onclick="moveLB(1)">&#10095;</button>
+    <img class="lightbox__img" id="lbImg" alt="">
+    <div class="lightbox__counter" id="lbCounter"></div>
 </div>
 
-<!-- MODAL RESERVA CON HORARIOS -->
-<div class="modal-overlay" id="modalReserva">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-        <div class="modal-title">Reservar Experiencia</div>
-        
+<!-- ===== MODAL RESERVA ===== -->
+<div class="modal-bg" id="modalBg">
+    <div class="modal">
+        <button class="modal__close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <div class="modal__title">Reservar <em>Experiencia</em></div>
+
         <form action="{{ route('reservas.store') }}" method="POST" id="reservaForm">
             @csrf
             <input type="hidden" name="cholet_id" value="{{ $cholet->id }}">
-            <input type="hidden" name="hora_reserva" id="hora_reserva_hidden">
-            
+            <input type="hidden" name="hora_reserva" id="horaHidden">
+
             <div class="form-group">
-                <label class="form-label">📅 Fecha de visita</label>
-                <input type="date" name="fecha" class="form-input" id="fechaReserva" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+                <label class="form-label">Fecha de Visita</label>
+                <input type="date" name="fecha" class="form-control" id="fechaInput"
+                       min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
             </div>
 
             <div class="form-group" id="horarioGroup" style="display:none;">
-                <label class="form-label">⏰ Horario disponible</label>
-                <select name="horario_id" id="horarioSelect" class="form-select" required>
+                <label class="form-label">Horario</label>
+                <select name="horario_id" id="horarioSelect" class="form-control" required>
                     <option value="">Selecciona una fecha primero</option>
                 </select>
-                <div id="cuposInfo" class="cupos-info" style="margin-top:8px;"></div>
+                <div class="cupos-info" id="cuposInfo"></div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">🎫 Tipo de experiencia</label>
-                <select name="experiencia" id="experienciaSelect" class="form-select" required>
-                    <option value="">Seleccione una opción</option>
-                    <option value="Blue">🔵 Blue - Bs49 </option>
-                    <option value="Gold">🟡 Gold - Bs89 </option>
-                    <option value="Platinum">🟣 Platinum - Bs149 </option>
+                <label class="form-label">Experiencia</label>
+                <select name="experiencia_id" id="expSelect" class="form-control" required>
+                    <option value="">Cargando experiencias...</option>
+                    @foreach($experiencias as $exp)
+                        <option value="{{ $exp->id }}" 
+                                data-precio="{{ $exp->precio }}"
+                                data-duracion="{{ $exp->duracion_horas }}"
+                                data-descripcion="{{ $exp->descripcion }}">
+                            {{ $exp->nombre }} — Bs {{ number_format($exp->precio, 2) }}
+                        </option>
+                    @endforeach
                 </select>
+                <div id="expDetails" class="experiencia-details" style="margin-top: 12px; display: none;">
+                    <div style="border-top: 1px solid var(--gold-thin); padding-top: 12px;">
+                        <strong id="expNombre" style="color: var(--gold);"></strong>
+                        <p id="expDescripcion" style="margin-top: 8px; font-size: 13px;"></p>
+                        <small><i class="fas fa-clock"></i> Duración: <span id="expDuracion"></span> horas</small>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">👥 Número de personas</label>
-                <input type="number" name="personas" id="personasInput" class="form-input" min="1" max="20" value="2" required>
-                <div id="totalPrecio" style="font-size:12px; color:var(--gold); margin-top:8px;"></div>
+                <label class="form-label">Número de Personas</label>
+                <input type="number" name="personas" id="persInput" class="form-control" min="1" max="20" value="2" required>
+                <div class="total-preview" id="totalPreview"></div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">📞 WhatsApp de contacto</label>
-                <input type="tel" name="telefono" class="form-input" placeholder="+591 77777777" required>
+                <label class="form-label">WhatsApp</label>
+                <input type="tel" name="telefono" class="form-control" placeholder="+591 77777777" required>
             </div>
 
-            <button type="submit" class="btn-submit">Confirmar Reserva</button>
+            <button type="submit" class="btn btn--gold" style="width:100%; justify-content:center; padding:16px;">
+                Confirmar Reserva <i class="fas fa-check"></i>
+            </button>
         </form>
     </div>
 </div>
 
+<!-- ===== SCRIPTS ===== -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    AOS.init({ duration: 800, once: true, offset: 50 });
+    AOS.init({ duration: 1000, once: true, offset: 50, easing: 'ease-out-quart' });
 
-    // Header scroll
+    // ===== RECOPILAR MEDIA =====
+    const mediaItems = [];
+    
+    @if($cholet->imagen)
+    mediaItems.push({
+        type: 'image',
+        src: '{{ asset('storage/cholets/' . $cholet->imagen) }}',
+        alt: '{{ $cholet->nombre }}'
+    });
+    @endif
+    
+    @foreach($cholet->imagenes as $img)
+    mediaItems.push({
+        type: 'image',
+        src: '{{ asset('storage/cholets/galeria/' . $img->imagen) }}',
+        alt: 'Galería {{ $cholet->nombre }}'
+    });
+    @endforeach
+    
+    @if($cholet->videos && $cholet->videos->count() > 0)
+        @foreach($cholet->videos as $video)
+        mediaItems.push({
+            type: 'video',
+            src: '{{ asset('storage/videos/' . $video->url) }}',
+            alt: '{{ $video->titulo ?? $cholet->nombre }}'
+        });
+        @endforeach
+    @endif
+
+    // ===== CONSTRUIR SLIDER =====
+    const sliderWrapper = document.getElementById('heroSliderWrapper');
+    
+    function buildSlider() {
+        if (!sliderWrapper) return;
+        sliderWrapper.innerHTML = '';
+        
+        mediaItems.forEach((item) => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            
+            const mediaWrapper = document.createElement('div');
+            mediaWrapper.className = 'hero__slide';
+            
+            if (item.type === 'image') {
+                const img = document.createElement('img');
+                img.src = item.src;
+                img.alt = item.alt;
+                img.loading = 'eager';
+                mediaWrapper.appendChild(img);
+            } else if (item.type === 'video') {
+                const video = document.createElement('video');
+                video.muted = true;
+                video.playsInline = true;
+                video.loop = false;
+                video.setAttribute('preload', 'metadata');
+                
+                const source = document.createElement('source');
+                source.src = item.src;
+                source.type = 'video/mp4';
+                video.appendChild(source);
+                
+                // Cargar el video para que esté listo
+                video.load();
+                
+                mediaWrapper.appendChild(video);
+            }
+            
+            slide.appendChild(mediaWrapper);
+            sliderWrapper.appendChild(slide);
+        });
+    }
+    
+    buildSlider();
+
+    // ===== INICIALIZAR SWIPER =====
+    let heroSwiper = null;
+    let autoPlayDelay = 6000;
+    
+    function initHeroSwiper() {
+        const hasMultipleItems = mediaItems.length > 1;
+        
+        heroSwiper = new Swiper('#heroSwiper', {
+            slidesPerView: 1,
+            loop: hasMultipleItems,
+            speed: 1200,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            autoplay: hasMultipleItems ? {
+                delay: autoPlayDelay,
+                disableOnInteraction: true,
+                pauseOnMouseEnter: true,
+                waitForTransition: true
+            } : false,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev'
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: false
+            },
+            watchSlidesProgress: true,
+            on: {
+                slideChangeTransitionStart: () => {
+                    // Pausar todos los videos al cambiar
+                    document.querySelectorAll('#heroSwiper video').forEach(v => {
+                        if (!v.paused) v.pause();
+                    });
+                },
+                slideChangeTransitionEnd: function() {
+                    // Reproducir video si existe en el slide activo
+                    const currentSlide = this.slides[this.activeIndex];
+                    const video = currentSlide?.querySelector('video');
+                    if (video) {
+                        video.play().catch(() => {});
+                    }
+                },
+                autoplayStop: function() {
+                    // No hacer nada especial
+                }
+            }
+        });
+    }
+    
+    // Iniciar después de construir
+    setTimeout(() => {
+        if (mediaItems.length > 0) {
+            initHeroSwiper();
+            
+            // Reproducir primer video si existe
+            setTimeout(() => {
+                const firstVideo = document.querySelector('#heroSwiper video');
+                if (firstVideo) {
+                    firstVideo.play().catch(() => {});
+                }
+            }, 300);
+        }
+    }, 150);
+
+    // ===== PAUSAR AUTOPLAY EN INTERACCIÓN =====
+    let autoPlayTimeout = null;
+    
+    function pauseAutoplay() {
+        if (heroSwiper && heroSwiper.autoplay) {
+            heroSwiper.autoplay.stop();
+            if (autoPlayTimeout) clearTimeout(autoPlayTimeout);
+            autoPlayTimeout = setTimeout(() => {
+                if (heroSwiper && mediaItems.length > 1) {
+                    heroSwiper.autoplay.start();
+                }
+            }, 10000);
+        }
+    }
+    
+    document.querySelectorAll('.swiper-button-next, .swiper-button-prev, .swiper-pagination-bullet').forEach(el => {
+        el.addEventListener('click', pauseAutoplay);
+    });
+
+    // ===== HEADER SCROLL =====
+    const header = document.getElementById('header');
     window.addEventListener('scroll', () => {
-        document.getElementById('header').classList.toggle('scrolled', window.scrollY > 60);
+        header.classList.toggle('header--scrolled', window.scrollY > 60);
     });
 
-    // Hero Swiper
-    new Swiper('#heroSwiper', {
-        slidesPerView: 1, loop: true, speed: 900, effect: 'fade', fadeEffect: { crossFade: true },
-        autoplay: { delay: 5500, disableOnInteraction: false },
-        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-        pagination: { el: '.swiper-pagination', clickable: true }
-    });
-
-    // Map toggle
-    let mapOpen = false;
-    function toggleMap() {
-        mapOpen = !mapOpen;
-        document.getElementById('mapWrapper').classList.toggle('open', mapOpen);
-        document.getElementById('mapArrow').style.transform = mapOpen ? 'rotate(180deg)' : '';
-    }
-
-    // Lightbox
-    function openLightbox(src) {
-        document.getElementById('lightboxImg').src = src;
-        document.getElementById('lightbox').style.display = 'flex';
+    // ===== LIGHTBOX =====
+    const imgs = @json($allImages);
+    let lbIdx = 0;
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCounter = document.getElementById('lbCounter');
+    
+    function openLB(i) {
+        if (!imgs.length) return;
+        lbIdx = i;
+        lbImg.src = imgs[lbIdx];
+        lbCounter.textContent = (lbIdx + 1) + ' / ' + imgs.length;
+        lb.classList.add('lightbox--open');
         document.body.style.overflow = 'hidden';
+        pauseAutoplay();
     }
-    function closeLightbox() {
-        document.getElementById('lightbox').style.display = 'none';
+    
+    function closeLB() { 
+        lb.classList.remove('lightbox--open'); 
+        document.body.style.overflow = ''; 
+    }
+    
+    function moveLB(d) { 
+        lbIdx = (lbIdx + d + imgs.length) % imgs.length; 
+        lbImg.src = imgs[lbIdx]; 
+        lbCounter.textContent = (lbIdx+1)+' / '+imgs.length; 
+    }
+    
+    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+
+    // ===== MODAL =====
+    function openModal() { 
+        document.getElementById('modalBg').classList.add('modal-bg--open'); 
+        document.body.style.overflow = 'hidden';
+        pauseAutoplay();
+    }
+    
+    function closeModal() { 
+        document.getElementById('modalBg').classList.remove('modal-bg--open'); 
         document.body.style.overflow = '';
     }
+    
+    document.getElementById('modalBg')?.addEventListener('click', e => { 
+        if (e.target.id === 'modalBg') closeModal(); 
+    });
+    
+    function scrollToReserva() { 
+        document.getElementById('reservaSection').scrollIntoView({ behavior: 'smooth' }); 
+        pauseAutoplay();
+    }
 
-    // Modal Reserva
-    function openModal() { document.getElementById('modalReserva').classList.add('active'); document.body.style.overflow = 'hidden'; }
-    function closeModal() { document.getElementById('modalReserva').classList.remove('active'); document.body.style.overflow = ''; }
+    // ===== EXPERIENCIA DETAILS =====
+    const expSel = document.getElementById('expSelect');
+    const persSel = document.getElementById('persInput');
+    const totalPrev = document.getElementById('totalPreview');
+    const expDetails = document.getElementById('expDetails');
+    const expNombre = document.getElementById('expNombre');
+    const expDescripcion = document.getElementById('expDescripcion');
+    const expDuracion = document.getElementById('expDuracion');
 
-    document.getElementById('modalReserva').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeLightbox(); closeModal(); } });
-
-    function scrollToReserva() { document.getElementById('reservaSection').scrollIntoView({ behavior: 'smooth' }); }
-
-    // ========== HORARIOS DISPONIBLES ==========
-    const fechaInput = document.getElementById('fechaReserva');
-    const horarioGroup = document.getElementById('horarioGroup');
-    const horarioSelect = document.getElementById('horarioSelect');
-    const horaReservaHidden = document.getElementById('hora_reserva_hidden');
-    const cuposInfo = document.getElementById('cuposInfo');
-    const personasInput = document.getElementById('personasInput');
-    const experienciaSelect = document.getElementById('experienciaSelect');
-    const totalPrecio = document.getElementById('totalPrecio');
-
-    const PRECIOS = { Blue: 49, Gold: 89, Platinum: 149 };
-
-    function actualizarPrecioTotal() {
-        const experiencia = experienciaSelect.value;
-        const personas = parseInt(personasInput.value) || 0;
-        if (experiencia && PRECIOS[experiencia] && personas > 0) {
-            const total = PRECIOS[experiencia] * personas;
-            totalPrecio.innerHTML = `💰 Total: $${total} USD (Bs ${(total * 6.96).toFixed(2)})`;
+    function updateExperienciaDetails() {
+        const selected = expSel.options[expSel.selectedIndex];
+        if (selected && selected.value) {
+            const nombre = selected.text.split(' — ')[0];
+            const precio = parseFloat(selected.dataset.precio);
+            const duracion = selected.dataset.duracion;
+            const descripcion = selected.dataset.descripcion;
+            const personas = parseInt(persSel.value) || 1;
+            
+            expNombre.textContent = nombre;
+            expDescripcion.textContent = descripcion || 'Descripción no disponible';
+            expDuracion.textContent = duracion;
+            expDetails.style.display = 'block';
+            
+            totalPrev.innerHTML = `<i class="fas fa-coins"></i> Total: <strong>Bs ${(precio * personas).toFixed(2)}</strong>`;
         } else {
-            totalPrecio.innerHTML = '';
+            expDetails.style.display = 'none';
+            totalPrev.innerHTML = '';
         }
     }
 
-    personasInput.addEventListener('input', actualizarPrecioTotal);
-    experienciaSelect.addEventListener('change', actualizarPrecioTotal);
-    actualizarPrecioTotal();
+    expSel?.addEventListener('change', updateExperienciaDetails);
+    persSel?.addEventListener('input', updateExperienciaDetails);
 
-    // Cargar horarios al seleccionar fecha
-    fechaInput.addEventListener('change', function() {
-        const fecha = this.value;
-        if (!fecha) {
-            horarioGroup.style.display = 'none';
-            return;
-        }
-
-        horarioSelect.innerHTML = '<option value="">⏳ Cargando horarios...</option>';
-        horarioGroup.style.display = 'block';
-        cuposInfo.innerHTML = '<span class="loading-spinner"></span> Buscando horarios...';
-
-        fetch(`/api/horarios-disponibles?cholet_id={{ $cholet->id }}&fecha=${fecha}`)
-            .then(response => response.json())
-            .then(horarios => {
-                horarioSelect.innerHTML = '<option value="">-- Selecciona un horario --</option>';
-                
-                if (!horarios || horarios.length === 0) {
-                    horarioSelect.innerHTML = '<option value="">❌ No hay horarios disponibles</option>';
-                    cuposInfo.innerHTML = '⚠️ No hay cupos disponibles para esta fecha. Prueba con otra fecha.';
-                    cuposInfo.className = 'cupos-info cupos-agotado';
-                    return;
+    // ===== HORARIOS =====
+    const fechaInput = document.getElementById('fechaInput');
+    const horGrp = document.getElementById('horarioGroup');
+    const horSel = document.getElementById('horarioSelect');
+    const cuposInfo = document.getElementById('cuposInfo');
+    const horaHidden = document.getElementById('horaHidden');
+    
+    fechaInput?.addEventListener('change', function() {
+        if (!this.value) return;
+        horGrp.style.display = 'block';
+        horSel.innerHTML = '<option>Cargando horarios…</option>';
+        fetch(`/api/horarios-disponibles?cholet_id={{ $cholet->id }}&fecha=${this.value}`)
+            .then(r => r.json()).then(h => {
+                horSel.innerHTML = '<option value="">— Selecciona un horario —</option>';
+                if (!h.length) { 
+                    horSel.innerHTML = '<option>Sin disponibilidad este día</option>'; 
+                    cuposInfo.innerHTML = '<span style="color:#ef4444;">Sin cupos disponibles</span>'; 
+                    return; 
                 }
-
-                horarios.forEach(horario => {
-                    const option = document.createElement('option');
-                    option.value = horario.id;
-                    let icono = '🕐';
-                    if (horario.hora_inicio < '12:00') icono = '🌅';
-                    else if (horario.hora_inicio < '18:00') icono = '☀️';
-                    else icono = '🌙';
-                    
-                    option.textContent = `${icono} ${horario.hora_inicio} - ${horario.hora_fin} (${horario.cupos_disponibles} cupos)`;
-                    option.dataset.hora = horario.hora_inicio;
-                    option.dataset.cupos = horario.cupos_disponibles;
-                    horarioSelect.appendChild(option);
+                h.forEach(hor => {
+                    const o = document.createElement('option');
+                    o.value = hor.id;
+                    o.textContent = `${hor.hora_inicio} – ${hor.hora_fin}  ·  ${hor.cupos_disponibles} cupos`;
+                    o.dataset.hora = hor.hora_inicio;
+                    o.dataset.cupos = hor.cupos_disponibles;
+                    horSel.appendChild(o);
                 });
-
-                cuposInfo.innerHTML = `✅ ${horarios.length} horario(s) disponible(s) para el ${fecha}`;
-                cuposInfo.className = 'cupos-info cupos-disponible';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                horarioSelect.innerHTML = '<option value="">⚠️ Error al cargar horarios</option>';
-                cuposInfo.innerHTML = '❌ Error de conexión. Intenta de nuevo.';
-                cuposInfo.className = 'cupos-info cupos-agotado';
+                cuposInfo.innerHTML = `<span style="color:#10b981;">${h.length} horarios disponibles</span>`;
             });
     });
-
-    // Al seleccionar horario
-    horarioSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        if (selectedOption && selectedOption.dataset.hora) {
-            horaReservaHidden.value = selectedOption.dataset.hora;
-            const cuposDisponibles = parseInt(selectedOption.dataset.cupos) || 0;
-            const personas = parseInt(personasInput.value) || 1;
-            
-            if (personas > cuposDisponibles) {
-                cuposInfo.innerHTML = `⚠️ Solo hay ${cuposDisponibles} cupos disponibles. Reduce a ${cuposDisponibles} personas máximo.`;
-                cuposInfo.className = 'cupos-info cupos-agotado';
-            } else if (cuposDisponibles <= 5) {
-                cuposInfo.innerHTML = `🎉 ¡Últimos ${cuposDisponibles} cupos! Reserva pronto.`;
-                cuposInfo.className = 'cupos-info cupos-limitado';
-            } else {
-                cuposInfo.innerHTML = `✅ ${cuposDisponibles} cupos disponibles. ¡Puedes reservar!`;
-                cuposInfo.className = 'cupos-info cupos-disponible';
-            }
+    
+    horSel?.addEventListener('change', function() {
+        const sel = this.options[this.selectedIndex];
+        if (sel && sel.dataset.hora) {
+            horaHidden.value = sel.dataset.hora;
+            const cupos = parseInt(sel.dataset.cupos);
+            cuposInfo.innerHTML = cupos <= 3
+                ? `<span style="color:#ef4444;">Últimos ${cupos} cupos</span>`
+                : cupos <= 8
+                    ? `<span style="color:#f59e0b;">${cupos} cupos disponibles</span>`
+                    : `<span style="color:#10b981;">${cupos} cupos disponibles</span>`;
         }
     });
 
-    // Validar personas contra cupos
-    personasInput.addEventListener('input', function() {
-        const selectedOption = horarioSelect.options[horarioSelect.selectedIndex];
-        if (selectedOption && selectedOption.dataset.cupos) {
-            const cuposDisponibles = parseInt(selectedOption.dataset.cupos);
-            const personas = parseInt(this.value) || 1;
-            
-            if (personas > cuposDisponibles) {
-                cuposInfo.innerHTML = `⚠️ Solo hay ${cuposDisponibles} cupos disponibles. Reduce a ${cuposDisponibles} personas máximo.`;
-                cuposInfo.className = 'cupos-info cupos-agotado';
-            } else if (cuposDisponibles <= 5) {
-                cuposInfo.innerHTML = `🎉 ¡Últimos ${cuposDisponibles} cupos!`;
-                cuposInfo.className = 'cupos-info cupos-limitado';
-            } else {
-                cuposInfo.innerHTML = `✅ ${cuposDisponibles} cupos disponibles. ¡Puedes reservar!`;
-                cuposInfo.className = 'cupos-info cupos-disponible';
-            }
-        }
-        actualizarPrecioTotal();
-    });
-
-    // Validar formulario antes de enviar
-    document.getElementById('reservaForm').addEventListener('submit', function(e) {
-        if (!fechaInput.value) {
-            e.preventDefault();
-            alert('❌ Por favor selecciona una fecha');
-            return false;
-        }
-        
-        if (!horarioSelect.value || horarioSelect.value === '') {
-            e.preventDefault();
-            alert('❌ Por favor selecciona un horario disponible');
-            return false;
-        }
-        
-        if (!experienciaSelect.value) {
-            e.preventDefault();
-            alert('❌ Por favor selecciona un tipo de experiencia');
-            return false;
-        }
-        
-        const personas = parseInt(personasInput.value) || 0;
-        if (personas < 1 || personas > 20) {
-            e.preventDefault();
-            alert('❌ El número de personas debe ser entre 1 y 20');
-            return false;
-        }
-        
-        const telefono = document.querySelector('[name=telefono]').value;
-        if (!telefono || telefono.length < 8) {
-            e.preventDefault();
-            alert('❌ Ingresa un número de WhatsApp válido (mínimo 8 dígitos)');
-            return false;
-        }
-        
-        const btn = this.querySelector('.btn-submit');
-        btn.innerHTML = '<span class="loading-spinner"></span> Procesando...';
-        btn.disabled = true;
-    });
-
-    // Rating
+    // ===== RATING =====
     let selectedRating = 0;
-    const stars = document.querySelectorAll('.star-btn');
-    const ratingMsg = document.getElementById('ratingMsg');
-
-    function updateStars(ratingValue) {
-        stars.forEach((star, index) => {
-            const icon = star.querySelector('i');
-            if (index < ratingValue) {
-                icon.className = 'fa-solid fa-star';
-                icon.style.color = 'var(--gold)';
-            } else {
-                icon.className = 'fa-regular fa-star';
-                icon.style.color = 'rgba(255,255,255,0.1)';
-            }
-        });
-    }
-
-    stars.forEach(star => {
-        star.addEventListener('mouseenter', () => updateStars(parseInt(star.dataset.rating)));
-        star.addEventListener('mouseleave', () => updateStars(selectedRating));
-        star.addEventListener('click', () => {
-            selectedRating = parseInt(star.dataset.rating);
-            updateStars(selectedRating);
-            ratingMsg.textContent = `⭐ Calificación: ${selectedRating} estrellas`;
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedRating = parseInt(btn.dataset.rating);
+            document.querySelectorAll('.star-btn').forEach((s, i) => {
+                const ic = s.querySelector('i');
+                if (i < selectedRating) { ic.className = 'fa-solid fa-star'; s.classList.add('active'); }
+                else { ic.className = 'fa-regular fa-star'; s.classList.remove('active'); }
+            });
+            const labels = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'];
+            document.getElementById('ratingFeedback').innerHTML = `<i class="fas fa-star"></i> ${selectedRating} — ${labels[selectedRating]}`;
         });
     });
 
-    function submitRating(choletId) {
-        if (!selectedRating) { ratingMsg.textContent = 'Selecciona una calificación'; return; }
+    function submitRating(id) {
+        if (!selectedRating) return showToast('Selecciona una calificación primero', 'warning');
         fetch('{{ route("rating.store") }}', {
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json', 
-                'X-CSRF-TOKEN': '{{ csrf_token() }}' 
-            },
-            body: JSON.stringify({ cholet_id: choletId, rating: selectedRating })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                ratingMsg.innerHTML = '✅ ¡Gracias por tu valoración!';
-                document.querySelector('.btn-rate').style.display = 'none';
-                if (data.average) document.getElementById('averageRating').innerHTML = data.average.toFixed(1) + ' ★';
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ cholet_id: id, rating: selectedRating })
+        }).then(r => r.json()).then(d => {
+            if (d.success) {
+                showToast('¡Gracias por tu valoración!');
+                document.getElementById('submitRatingBtn').style.display = 'none';
+                if (d.average) document.getElementById('avgRatingDisplay').textContent = d.average.toFixed(1);
             }
-        })
-        .catch(() => ratingMsg.innerHTML = '❌ Error al enviar');
+        });
     }
 
-    function showToast(msg, icon = 'fa-check-circle') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.innerHTML = `<i class="fas ${icon}"></i><span>${msg}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3400);
+    function showToast(msg, type = 'success') {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerHTML = `<i class="fas fa-${type === 'warning' ? 'exclamation-circle' : 'check-circle'}"></i> ${msg}`;
+        document.getElementById('toastStack').appendChild(t);
+        setTimeout(() => t.remove(), 3100);
     }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeLB(); closeModal(); }
+        if (lb.classList.contains('lightbox--open')) {
+            if (e.key === 'ArrowLeft') moveLB(-1);
+            if (e.key === 'ArrowRight') moveLB(1);
+        }
+    });
 
     @if(session('success')) showToast('{{ session('success') }}'); @endif
-    @if(session('error')) showToast('{{ session('error') }}', 'fa-exclamation-triangle'); @endif
+    @if(session('error')) showToast('{{ session('error') }}', 'warning'); @endif
 </script>
 </body>
 </html>

@@ -22,7 +22,6 @@ class Kernel extends HttpKernel
      * Middleware por grupos (web / api)
      */
     protected $middlewareGroups = [
-
         'web' => [
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -39,34 +38,20 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * ALIASES de middleware (IMPORTANTE)
+     * ALIASES de middleware (para usar en rutas)
      */
     protected $middlewareAliases = [
-
-        // 🔐 Autenticación
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
-
-        // 🚫 Accesos
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
-        // 🛡️ Seguridad
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-
-        // 🔥 AQUÍ ESTA LO IMPORTANTE (ADMIN)
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'guia.auth' => \App\Http\Middleware\GuiaAuthMiddleware::class,
     ];
-
-    
-    protected $routeMiddleware = [
-
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
-
-     ];
 }

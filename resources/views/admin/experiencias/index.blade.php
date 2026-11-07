@@ -85,6 +85,7 @@
         border: 1px solid #221a08;
         border-radius: 4px;
         overflow: hidden;
+        position: relative;
     }
 
     .panel::before {
@@ -95,8 +96,6 @@
         background: linear-gradient(90deg, #c9a84c, transparent);
         opacity: .7;
     }
-
-    .panel { position: relative; }
 
     .data-table {
         width: 100%;
@@ -157,11 +156,29 @@
     }
 
     .empty-state i { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    
+    .slug-cell {
+        font-family: monospace;
+        font-size: 0.75rem;
+        color: #7a6a3a;
+    }
+    
+    .icon-preview {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        background: rgba(201,168,76,0.1);
+    }
 </style>
 
 <div class="page-wrap">
     <div class="top-bar">
-        <h3 style="margin:0; color:#e8e0d0;">Experiencias</h3>
+        <h3 style="margin:0; color:#e8e0d0;">
+            <i class="ti ti-ticket"></i> Experiencias
+        </h3>
         <a href="{{ route('admin.experiencias.create') }}" class="btn-primary">
             <i class="ti ti-plus"></i> Nueva Experiencia
         </a>
@@ -174,9 +191,9 @@
                     <tr>
                         <th>#</th>
                         <th>Nombre</th>
+                        <th>Slug</th>
                         <th>Descripción</th>
-                        <th>Precio USD</th>
-                        <th>Precio Bs</th>
+                        <th>Precio (Bs)</th>
                         <th>Duración</th>
                         <th>Estado</th>
                         <th>Orden</th>
@@ -190,14 +207,19 @@
                         <td>
                             <div style="display:flex; align-items:center; gap:8px;">
                                 @if($exp->icono)
-                                    <i class="{{ $exp->icono }}" style="color:{{ $exp->color ?? '#c9a84c' }}"></i>
+                                    <div class="icon-preview" style="background: {{ $exp->color ?? '#c9a84c' }}20;">
+                                        <i class="{{ $exp->icono }}" style="color:{{ $exp->color ?? '#c9a84c' }}"></i>
+                                    </div>
                                 @endif
                                 <strong style="color:{{ $exp->color ?? '#e8e0d0' }}">{{ $exp->nombre }}</strong>
                             </div>
                         </td>
+                        <td class="slug-cell">{{ $exp->slug ?? '—' }}</td>
                         <td>{{ Str::limit($exp->descripcion, 50) }}</td>
-                        <td class="precio">${{ number_format($exp->precio, 2) }}</td>
-                        <td>Bs {{ number_format($exp->precio_bs ?? $exp->precio * 6.96, 2) }}</td>
+                        <!-- CORREGIDO: Ahora solo muestra el precio en Bolivianos -->
+                        <td class="precio">
+                            <i class="fas fa-bs"></i> Bs {{ number_format($exp->precio, 2) }}
+                        </td>
                         <td>{{ $exp->duracion_horas }} horas</td>
                         <td>
                             @if($exp->activo)

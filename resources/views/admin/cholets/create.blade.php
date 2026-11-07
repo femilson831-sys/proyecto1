@@ -6,7 +6,7 @@
 
 <style>
     .form-wrap {
-        max-width: 860px;
+        max-width: 1200px;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
@@ -159,6 +159,7 @@
     .char-counter.warn { color: #d97706; }
     .char-counter.over  { color: #f87171; }
 
+    /* Estilos para subir imágenes */
     .img-upload {
         border: 1px dashed #2a2010;
         border-radius: 3px;
@@ -206,36 +207,209 @@
         margin-bottom: .25rem;
     }
 
-    .img-preview-wrap {
-        margin-top: 1rem;
-        display: none;
+    /* Estilos para galería de imágenes */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .gallery-item {
         position: relative;
-    }
-
-    .img-preview-wrap img {
-        width: 100%;
-        height: 220px;
-        object-fit: cover;
-        border-radius: 3px;
         border: 1px solid #2a2010;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #0a0a0a;
+        transition: all .2s;
     }
-
-    .img-preview-clear {
+    
+    .gallery-item:hover {
+        border-color: #c9a84c;
+        transform: translateY(-2px);
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+    
+    .gallery-item-actions {
         position: absolute;
-        top: .5rem; right: .5rem;
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        background: rgba(0,0,0,.75);
-        border: 1px solid rgba(255,255,255,.12);
-        color: #f0ead8;
-        display: flex; align-items: center; justify-content: center;
-        font-size: .75rem;
-        cursor: pointer;
-        transition: background .2s;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.3rem;
     }
-
-    .img-preview-clear:hover { background: rgba(192,57,43,.8); }
-
+    
+    .gallery-item-actions button {
+        background: rgba(0,0,0,0.8);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .gallery-item-actions button:hover {
+        transform: scale(1.05);
+    }
+    
+    .gallery-item-actions .btn-remove-gallery {
+        background: rgba(192,57,43,0.9);
+    }
+    
+    .gallery-item-actions .btn-remove-gallery:hover {
+        background: rgba(192,57,43,1);
+    }
+    
+    .gallery-item-actions .btn-move {
+        background: rgba(0,0,0,0.8);
+    }
+    
+    /* Estilos para videos locales */
+    .videos-list {
+        margin-top: 1.5rem;
+    }
+    
+    .video-item {
+        background: rgba(201,168,76,0.05);
+        border: 1px solid #2a2010;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .video-item:hover {
+        border-color: #c9a84c;
+        background: rgba(201,168,76,0.08);
+    }
+    
+    .video-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+    }
+    
+    .video-info {
+        flex: 1;
+    }
+    
+    .video-nombre {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #f0ead8;
+        margin-bottom: 0.2rem;
+    }
+    
+    .video-size {
+        font-size: 0.7rem;
+        color: #6b5e3e;
+    }
+    
+    .video-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .video-actions button {
+        background: rgba(0,0,0,0.6);
+        border: none;
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .video-actions button:hover {
+        transform: scale(1.05);
+    }
+    
+    .video-preview {
+        margin-top: 0.5rem;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #000;
+    }
+    
+    .video-preview video {
+        width: 100%;
+        max-height: 200px;
+        cursor: pointer;
+    }
+    
+    .btn-add-more {
+        background: rgba(201,168,76,0.1);
+        border: 1px dashed #c9a84c;
+        color: #c9a84c;
+        padding: 0.8rem 1rem;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-top: 1rem;
+        width: 100%;
+        text-align: center;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-add-more:hover {
+        background: rgba(201,168,76,0.2);
+        transform: translateY(-1px);
+    }
+    
+    .video-upload {
+        border: 1px dashed #2a2010;
+        border-radius: 3px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+        position: relative;
+        background: rgba(255,255,255,.02);
+        margin-top: 1rem;
+    }
+    
+    .video-upload:hover {
+        border-color: #7a5f28;
+        background: rgba(201,168,76,.03);
+    }
+    
+    .video-upload input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .video-upload-icon {
+        font-size: 2rem;
+        color: #3d2e10;
+        margin-bottom: 0.5rem;
+        transition: color .2s;
+    }
+    
+    .video-upload:hover .video-upload-icon { color: #c9a84c; }
+    
+    .video-upload-text {
+        font-size: 0.75rem;
+        color: #6b5e3e;
+    }
+    
     .btn-row {
         display: flex;
         gap: .75rem;
@@ -290,13 +464,24 @@
         color: #f0ead8;
         background: rgba(255,255,255,.03);
     }
+    
+    .info-note {
+        background: rgba(201,168,76,0.05);
+        border-left: 3px solid #c9a84c;
+        padding: 0.8rem;
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: #9a8060;
+    }
 </style>
 
-<form action="{{ route('admin.cholets.store') }}" method="POST" enctype="multipart/form-data">
+<!-- ✅ CORREGIDO: Ruta correcta para ADMIN -->
+<form action="{{ route('admin.cholets.store') }}" method="POST" enctype="multipart/form-data" id="choletForm">
     @csrf
 
     <div class="form-wrap">
 
+        <!-- Panel 1: Información básica -->
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon"><i class="ti ti-building-estate"></i></div>
@@ -306,7 +491,6 @@
                 </div>
             </div>
             <div class="panel-body">
-
                 <div class="field">
                     <label><i class="ti ti-forms"></i> Nombre del cholet</label>
                     <input type="text" name="nombre" placeholder="Ej. Cholet Los Andes"
@@ -341,10 +525,10 @@
                         @enderror
                     </div>
                 </div>
-
             </div>
         </div>
 
+        <!-- Panel 2: Descripción -->
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon"><i class="ti ti-align-left"></i></div>
@@ -367,6 +551,7 @@
             </div>
         </div>
 
+        <!-- Panel 3: Imagen principal -->
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon"><i class="ti ti-photo"></i></div>
@@ -400,6 +585,75 @@
             </div>
         </div>
 
+        <!-- Panel 4: Galería de imágenes -->
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-head-icon"><i class="ti ti-gallery"></i></div>
+                <div class="panel-head-text">
+                    <div class="panel-title">Galería de imágenes</div>
+                    <div class="panel-sub">Imágenes adicionales del cholet (máximo 10)</div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="field">
+                    <div class="img-upload" id="galleryUploadZone">
+                        <input type="file" name="galeria[]" accept="image/*" id="galleryInput" multiple>
+                        <div class="img-upload-icon"><i class="ti ti-cloud-upload"></i></div>
+                        <div class="img-upload-text">
+                            <strong>Selecciona múltiples imágenes</strong>
+                            Puedes seleccionar varias imágenes a la vez<br>
+                            JPG, PNG, WEBP — máximo 5 MB cada una
+                        </div>
+                    </div>
+                    @error('galeria.*')
+                        <div class="field-error"><i class="ti ti-alert-circle"></i> {{ $message }}</div>
+                    @enderror
+                </div>
+                
+                <div id="galleryPreview" class="gallery-grid"></div>
+                <div class="info-note">
+                    <i class="ti ti-info-circle"></i> Las imágenes se mostrarán en el orden que las subas.
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 5: Videos LOCALES -->
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-head-icon"><i class="ti ti-video"></i></div>
+                <div class="panel-head-text">
+                    <div class="panel-title">Videos del cholet</div>
+                    <div class="panel-sub">Sube videos desde tu computadora (MP4, MOV, AVI)</div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="field">
+                    <label><i class="ti ti-video"></i> Videos locales</label>
+                    
+                    <!-- Área para subir videos -->
+                    <div class="video-upload" id="videoUploadZone">
+                        <input type="file" name="nuevos_videos[]" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm" id="videoInput" multiple>
+                        <div class="video-upload-icon"><i class="ti ti-cloud-upload"></i></div>
+                        <div class="video-upload-text">
+                            <strong>Sube uno o más videos</strong>
+                            MP4, MOV, AVI, WEBM — máximo 100 MB cada uno
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de videos agregados -->
+                    <div id="videosList" class="videos-list"></div>
+                    
+                    @error('nuevos_videos.*')
+                        <div class="field-error"><i class="ti ti-alert-circle"></i> {{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="info-note">
+                    <i class="ti ti-info-circle"></i> Formatos soportados: MP4, MOV, AVI, WEBM. Tamaño máximo por video: 100MB. Máximo 5 videos.
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
         <div class="btn-row">
             <a href="{{ route('admin.cholets.index') }}" class="btn-cancel">
                 <i class="ti ti-arrow-left"></i> Cancelar
@@ -413,6 +667,7 @@
 </form>
 
 <script>
+// ==================== 1. IMAGEN PRINCIPAL ====================
 const imgInput = document.getElementById('imgInput');
 const previewWrap = document.getElementById('previewWrap');
 const previewImg = document.getElementById('previewImg');
@@ -451,6 +706,187 @@ clearImg.addEventListener('click', function () {
     uploadZone.style.display = 'block';
 });
 
+// ==================== 2. GALERÍA DE IMÁGENES ====================
+const galleryInput = document.getElementById('galleryInput');
+const galleryPreview = document.getElementById('galleryPreview');
+let galleryFiles = [];
+
+galleryInput.addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    
+    if (galleryFiles.length + files.length > 10) {
+        alert('Máximo 10 imágenes en la galería');
+        return;
+    }
+    
+    files.forEach(file => {
+        if (file.size > 5 * 1024 * 1024) {
+            alert(`El archivo ${file.name} es demasiado grande. Máximo 5MB`);
+            return;
+        }
+        
+        if (!file.type.match('image.*')) {
+            alert(`El archivo ${file.name} no es una imagen válida`);
+            return;
+        }
+        
+        galleryFiles.push(file);
+    });
+    
+    renderGalleryPreview();
+});
+
+function renderGalleryPreview() {
+    galleryPreview.innerHTML = '';
+    
+    galleryFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.innerHTML = `
+                <img src="${e.target.result}" alt="Vista previa ${index + 1}">
+                <div class="gallery-item-actions">
+                    ${index > 0 ? '<button type="button" class="btn-move" onclick="moveGalleryImage(' + index + ', ' + (index - 1) + ')"><i class="ti ti-arrow-up"></i></button>' : ''}
+                    ${index < galleryFiles.length - 1 ? '<button type="button" class="btn-move" onclick="moveGalleryImage(' + index + ', ' + (index + 1) + ')"><i class="ti ti-arrow-down"></i></button>' : ''}
+                    <button type="button" class="btn-remove-gallery" onclick="removeGalleryImage(${index})"><i class="ti ti-trash"></i></button>
+                </div>
+            `;
+            galleryPreview.appendChild(galleryItem);
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    updateGalleryInput();
+}
+
+function updateGalleryInput() {
+    const dataTransfer = new DataTransfer();
+    galleryFiles.forEach(file => {
+        dataTransfer.items.add(file);
+    });
+    galleryInput.files = dataTransfer.files;
+}
+
+function removeGalleryImage(index) {
+    galleryFiles.splice(index, 1);
+    renderGalleryPreview();
+}
+
+function moveGalleryImage(from, to) {
+    if (to >= 0 && to < galleryFiles.length) {
+        const element = galleryFiles.splice(from, 1)[0];
+        galleryFiles.splice(to, 0, element);
+        renderGalleryPreview();
+    }
+}
+
+// ==================== 3. VIDEOS LOCALES ====================
+const videoInput = document.getElementById('videoInput');
+const videosList = document.getElementById('videosList');
+let videoFiles = [];
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function renderVideosList() {
+    videosList.innerHTML = '';
+    
+    videoFiles.forEach((file, index) => {
+        const url = URL.createObjectURL(file);
+        const videoItem = document.createElement('div');
+        videoItem.className = 'video-item';
+        videoItem.innerHTML = `
+            <div class="video-header">
+                <div class="video-info">
+                    <div class="video-nombre">${escapeHtml(file.name)}</div>
+                    <div class="video-size">${formatFileSize(file.size)}</div>
+                </div>
+                <div class="video-actions">
+                    <button type="button" class="btn-remove-video" data-index="${index}" title="Eliminar">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="video-preview">
+                <video controls preload="metadata">
+                    <source src="${url}" type="${file.type}">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+            </div>
+            <input type="hidden" name="nuevos_videos[${index}]" value="${index}">
+        `;
+        videosList.appendChild(videoItem);
+        
+        videoItem.dataset.url = url;
+    });
+    
+    document.querySelectorAll('.btn-remove-video').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const index = parseInt(btn.dataset.index);
+            if (videoFiles[index]) {
+                URL.revokeObjectURL(videoFiles[index].url);
+            }
+            videoFiles.splice(index, 1);
+            renderVideosList();
+            updateVideoInput();
+        });
+    });
+}
+
+function updateVideoInput() {
+    const dataTransfer = new DataTransfer();
+    videoFiles.forEach(file => {
+        dataTransfer.items.add(file);
+    });
+    videoInput.files = dataTransfer.files;
+}
+
+videoInput.addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    
+    if (videoFiles.length + files.length > 5) {
+        alert('Máximo 5 videos por cholet');
+        return;
+    }
+    
+    files.forEach(file => {
+        const validTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'];
+        if (!validTypes.includes(file.type)) {
+            alert(`El archivo ${file.name} no es un formato de video válido. Formatos permitidos: MP4, MOV, AVI, WEBM`);
+            return;
+        }
+        
+        if (file.size > 100 * 1024 * 1024) {
+            alert(`El archivo ${file.name} es demasiado grande. Máximo 100MB`);
+            return;
+        }
+        
+        videoFiles.push(file);
+    });
+    
+    renderVideosList();
+    updateVideoInput();
+});
+
+window.addEventListener('beforeunload', () => {
+    videoFiles.forEach(file => {
+        if (file.url) URL.revokeObjectURL(file.url);
+    });
+});
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ==================== 4. CONTADOR DE DESCRIPCIÓN ====================
 const descArea = document.getElementById('descArea');
 const charCount = document.getElementById('charCount');
 const MAX = 800;

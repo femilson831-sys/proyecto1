@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Experiencia extends Model
 {
-    protected $table = 'experiencias';
-    
+    use HasFactory;
+
     protected $fillable = [
         'nombre',
         'slug',
         'descripcion',
-        'precio',
-        'precio_bs',
+        'precio',        // Ahora es precio en Bolivianos
         'icono',
         'color',
         'duracion_horas',
@@ -24,33 +23,41 @@ class Experiencia extends Model
     ];
 
     protected $casts = [
-        'precio' => 'decimal:2',
-        'precio_bs' => 'decimal:2',
         'activo' => 'boolean',
-        'duracion_horas' => 'integer'
+        'precio' => 'decimal:2',
+        'duracion_horas' => 'integer',
+        'orden' => 'integer'
     ];
 
-    public function reservas(): HasMany
+    /**
+     * Relación con las reservas
+     */
+    public function reservas()
     {
         return $this->hasMany(Reserva::class, 'experiencia_id');
     }
 
-    // Mutador para crear slug automáticamente
-    public function setNombreAttribute($value)
+    /**
+     * Obtener el precio formateado
+     */
+    public function getPrecioFormateadoAttribute()
     {
-        $this->attributes['nombre'] = $value;
-        $this->attributes['slug'] = strtolower(str_replace(' ', '-', $value));
+        return 'Bs ' . number_format($this->precio, 2);
     }
 
-    // Scope para experiencias activas
-    public function scopeActivos($query)
+    /**
+     * Scope para experiencias activas
+     */
+    public function scopeActivo($query)
     {
-        return $query->where('activo', true);
+        return $query->where('activo', 1);
     }
 
-    // Obtener precio en Bolivianos (tipo de cambio 6.96)
-    public function getPrecioBsAttribute($value)
+    /**
+     * Scope para ordenar
+     */
+    public function scopeOrdenado($query)
     {
-        return $value ?? $this->precio * 6.96;
+        return $query->orderBy('orden', 'asc');
     }
 }

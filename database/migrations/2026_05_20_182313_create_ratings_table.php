@@ -12,11 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('cholet_id')->constrained()->onDelete('cascade');
-            $table->integer('rating')->min(1)->max(5);
+            $table->integer('rating');
             $table->timestamps();
-            
-            // Un usuario solo puede calificar una vez por cholet
-            $table->unique(['user_id', 'cholet_id']);
         });
     }
 

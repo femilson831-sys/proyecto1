@@ -6,33 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('cholets', function (Blueprint $table) {
-
             $table->id();
-
             $table->string('nombre');
-
             $table->string('ubicacion');
-
             $table->text('descripcion');
-
-            $table->string('imagen');
-
+            $table->string('imagen', 500);  // ✅ CORREGIDO: soporta rutas largas
             $table->string('categoria');
-
             $table->timestamps();
-
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cholets');

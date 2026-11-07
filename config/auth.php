@@ -20,17 +20,19 @@ return [
     */
 
     'guards' => [
-
-        // 👤 USUARIOS NORMALES
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
 
-        // 🔐 ADMINISTRADORES
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
+        ],
+
+        'guia' => [
+            'driver' => 'session',
+            'provider' => 'guias',
         ],
     ],
 
@@ -41,17 +43,19 @@ return [
     */
 
     'providers' => [
-
-        // 👤 USERS (clientes)
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
 
-        // 🔐 ADMINS (tabla separada)
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+
+        'guias' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Guia::class,
         ],
     ],
 
@@ -62,8 +66,6 @@ return [
     */
 
     'passwords' => [
-
-        // 👤 reset para users
         'users' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
@@ -71,20 +73,20 @@ return [
             'throttle' => 60,
         ],
 
-        // 🔐 reset para admins (opcional pero recomendado)
         'admins' => [
             'provider' => 'admins',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],
-    ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Password Confirmation Timeout
-    |--------------------------------------------------------------------------
-    */
+        'guias' => [
+            'provider' => 'guias',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+    ],
 
     'password_timeout' => 10800,
 

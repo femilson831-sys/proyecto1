@@ -16,11 +16,11 @@
         <!-- LÍNEA SUPERIOR DORADA -->
         <div class="login-card__top-bar"></div>
 
-        <!-- MARCA -->
+        <!-- MARCA CON LOGO MÁS GRANDE -->
         <div class="login-brand">
 
             <div class="login-brand__icon">
-                <img src="{{ asset('img/logo.png') }}" alt="JACHA TOURS">
+                <img src="{{ asset('img/logo.blanco.amarillo.png') }}" alt="JACHA TOURS">
             </div>
 
             <span class="login-brand__name">JACHA TOURS</span>
@@ -116,7 +116,6 @@
 
 <!-- ===========================
      ESTILOS INLINE
-     (puedes moverlos a styles.css)
      =========================== -->
 <style>
 
@@ -159,6 +158,8 @@
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(201,168,76,0.25);
     padding: 0 2.5rem 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
 }
 
 /* LÍNEA SUPERIOR */
@@ -168,47 +169,64 @@
     margin-bottom: 2.5rem;
 }
 
-/* MARCA */
+/* ===== MARCA CON LOGO MÁS GRANDE ===== */
 .login-brand {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .login-brand__icon {
-    width: 72px;
-    height: 72px;
-    border: 1px solid rgba(201,168,76,0.35);
+    width: 120px;    /* Antes 72px */
+    height: 120px;   /* Antes 72px */
+    border: 2px solid rgba(201,168,76,0.35);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1rem;
+    margin: 0 auto 1.2rem;
     overflow: hidden;
-    padding: 8px;
+    padding: 12px;
+    background: rgba(201,168,76,0.05);
+    transition: all 0.4s ease;
+    box-shadow: 0 0 30px rgba(201,168,76,0.08);
+}
+
+.login-brand__icon:hover {
+    border-color: rgba(201,168,76,0.7);
+    box-shadow: 0 0 50px rgba(201,168,76,0.15);
+    transform: scale(1.03);
 }
 
 .login-brand__icon img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(201,168,76,0.1));
+    transition: transform 0.4s ease;
+}
+
+.login-brand__icon:hover img {
+    transform: scale(1.05);
 }
 
 .login-brand__name {
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.8rem;      /* Antes 1.5rem */
     font-weight: 800;
     color: #fff;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     font-family: 'Cormorant Garamond', serif;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.3);
 }
 
 .login-brand__sub {
     display: block;
-    font-size: 0.65rem;
-    color: rgba(255,255,255,0.35);
+    font-size: 0.7rem;      /* Antes 0.65rem */
+    color: rgba(255,255,255,0.4);
     letter-spacing: 0.4em;
     text-transform: uppercase;
-    margin-top: 4px;
+    margin-top: 6px;
+    font-weight: 300;
 }
 
 /* ALERT */
@@ -220,6 +238,7 @@
     padding: 0.6rem 1rem;
     margin-bottom: 1.2rem;
     letter-spacing: 0.04em;
+    border-radius: 4px;
 }
 
 /* FIELD */
@@ -246,12 +265,13 @@
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
     outline: none;
-    border-radius: 2px;
-    transition: border-color 0.3s;
+    border-radius: 4px;
+    transition: border-color 0.3s, background 0.3s;
 }
 
 .login-input:focus {
     border-color: #C9A84C;
+    background: rgba(255,255,255,0.06);
 }
 
 .login-input::placeholder {
@@ -276,6 +296,8 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .login-remember {
@@ -317,15 +339,16 @@
     letter-spacing: 0.25em;
     text-transform: uppercase;
     border: none;
-    border-radius: 2px;
+    border-radius: 4px;
     cursor: pointer;
     font-family: 'Inter', sans-serif;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
 }
 
 .login-submit:hover {
     background: #E8C96D;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(201,168,76,0.3);
 }
 
 .login-submit:active {
@@ -377,8 +400,39 @@
 
 /* RESPONSIVE */
 @media (max-width: 480px) {
-    .login-card { padding: 0 1.5rem 2rem; }
-    .login-row  { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .login-card { 
+        padding: 0 1.5rem 2rem;
+        margin: 0 0.5rem;
+    }
+    
+    .login-brand__icon {
+        width: 90px;
+        height: 90px;
+        padding: 10px;
+    }
+    
+    .login-brand__name {
+        font-size: 1.4rem;
+    }
+    
+    .login-row { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 0.8rem; 
+    }
+}
+
+@media (max-width: 380px) {
+    .login-brand__icon {
+        width: 75px;
+        height: 75px;
+        padding: 8px;
+    }
+    
+    .login-brand__name {
+        font-size: 1.2rem;
+        letter-spacing: 0.15em;
+    }
 }
 
 </style>

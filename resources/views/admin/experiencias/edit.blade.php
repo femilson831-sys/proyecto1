@@ -81,6 +81,20 @@
     .btn-cancel:hover { border-color: #7a5f28; color: #f0ead8; }
     .help-text { font-size: .7rem; color: #6b5e3e; margin-top: .3rem; }
     textarea { resize: vertical; min-height: 100px; }
+    .preview-icon {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 1.2rem;
+    }
+    .slug-preview {
+        background: #0a0a0a;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #c9a84c;
+        margin-top: 0.5rem;
+    }
 </style>
 
 <div class="form-wrap">
@@ -92,51 +106,69 @@
 
                 <div class="form-group">
                     <label>📛 NOMBRE DE LA EXPERIENCIA</label>
-                    <input type="text" name="nombre" value="{{ old('nombre', $experiencia->nombre) }}" required>
+                    <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $experiencia->nombre) }}" required>
+                    <div class="help-text">Nombre único que identificará esta experiencia</div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔗 SLUG (URL amigable)</label>
+                    <input type="text" name="slug" id="slug" value="{{ old('slug', $experiencia->slug) }}" placeholder="se-genera-automaticamente">
+                    <div class="help-text">Dejar en blanco para generar automáticamente desde el nombre</div>
+                    <div class="slug-preview" id="slugPreview">
+                        <i class="fas fa-link"></i> URL: /experiencias/<span id="slugText">{{ $experiencia->slug ?? '...' }}</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>📝 DESCRIPCIÓN</label>
-                    <textarea name="descripcion">{{ old('descripcion', $experiencia->descripcion) }}</textarea>
+                    <textarea name="descripcion" placeholder="Describe qué incluye esta experiencia...">{{ old('descripcion', $experiencia->descripcion) }}</textarea>
                 </div>
 
+                <!-- CORREGIDO: Ahora solo un campo de precio en Bolivianos -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label>💰 PRECIO (USD)</label>
-                        <input type="number" name="precio" step="0.01" value="{{ old('precio', $experiencia->precio) }}" required>
+                        <label>💰 PRECIO (Bolivianos - Bs)</label>
+                        <input type="number" name="precio" step="0.01" value="{{ old('precio', $experiencia->precio) }}" placeholder="341.04" required>
+                        <div class="help-text">Precio en Bolivianos (Bs) por persona</div>
                     </div>
                     <div class="form-group">
-                        <label>💰 PRECIO (Bs)</label>
-                        <input type="number" name="precio_bs" step="0.01" value="{{ old('precio_bs', $experiencia->precio_bs) }}">
-                        <div class="help-text">Opcional: si está vacío se calcula automáticamente</div>
+                        <label>🎨 ICONO (FontAwesome)</label>
+                        <input type="text" name="icono" id="icono" value="{{ old('icono', $experiencia->icono) }}" placeholder="fas fa-star">
+                        <div class="help-text">
+                            Ej: fas fa-crown, fas fa-gem
+                            <span class="preview-icon" id="iconPreview">
+                                @if($experiencia->icono)
+                                    <i class="{{ $experiencia->icono }}"></i>
+                                @endif
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-row-3">
                     <div class="form-group">
-                        <label>🎨 ICONO (FontAwesome)</label>
-                        <input type="text" name="icono" value="{{ old('icono', $experiencia->icono) }}" placeholder="fas fa-star">
-                    </div>
-                    <div class="form-group">
                         <label>🎨 COLOR</label>
                         <input type="color" name="color" value="{{ old('color', $experiencia->color ?? '#c9a84c') }}">
+                        <div class="help-text">Color representativo de la experiencia</div>
                     </div>
                     <div class="form-group">
                         <label>⏰ DURACIÓN (horas)</label>
                         <input type="number" name="duracion_horas" value="{{ old('duracion_horas', $experiencia->duracion_horas) }}" min="1" max="24" required>
                     </div>
+                    <div class="form-group">
+                        <label>🔢 ORDEN</label>
+                        <input type="number" name="orden" value="{{ old('orden', $experiencia->orden) }}" min="0">
+                        <div class="help-text">Número menor = aparece primero</div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label>📋 QUÉ INCLUYE</label>
-                    <textarea name="incluye">{{ old('incluye', $experiencia->incluye) }}</textarea>
+                    <textarea name="incluye" placeholder="- Guía especializado&#10;- Fotografía profesional&#10;- Transporte premium">{{ old('incluye', $experiencia->incluye) }}</textarea>
+                    <div class="help-text">Lista de servicios incluidos (uno por línea)</div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>🔢 ORDEN</label>
-                        <input type="number" name="orden" value="{{ old('orden', $experiencia->orden) }}" min="0">
-                    </div>
                     <div class="form-group">
                         <label>✅ ACTIVO</label>
                         <select name="activo">
@@ -158,5 +190,57 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Generar slug automáticamente desde el nombre
+    const nombreInput = document.getElementById('nombre');
+    const slugInput = document.getElementById('slug');
+    const slugText = document.getElementById('slugText');
+    
+    function generateSlug(text) {
+        return text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+    
+    function updateSlugPreview() {
+        let slug = slugInput.value.trim();
+        if (!slug && nombreInput.value) {
+            slug = generateSlug(nombreInput.value);
+        }
+        slugText.textContent = slug || '...';
+    }
+    
+    nombreInput.addEventListener('input', function() {
+        if (!slugInput.value || slugInput.value === generateSlug(this.value)) {
+            slugInput.value = generateSlug(this.value);
+        }
+        updateSlugPreview();
+    });
+    
+    slugInput.addEventListener('input', updateSlugPreview);
+    
+    // Actualizar vista previa del ícono
+    const iconoInput = document.getElementById('icono');
+    const iconPreview = document.getElementById('iconPreview');
+    
+    function updateIconPreview() {
+        const iconClass = iconoInput.value.trim();
+        if (iconClass) {
+            iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
+        } else {
+            iconPreview.innerHTML = '';
+        }
+    }
+    
+    iconoInput.addEventListener('input', updateIconPreview);
+    
+    // Inicializar
+    updateSlugPreview();
+    updateIconPreview();
+</script>
 
 @endsection
